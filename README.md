@@ -1,16 +1,47 @@
-# React + Vite
+# MediBook
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Medical Clinic Appointment Booking System**
 
-Currently, two official plugins are available:
+MediBook is a frontend project designed to make medical appointments easier to manage. It provides a simple interface for discovering medical specialists and learning how to arrange an appointment.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Current Features
 
-## React Compiler
+- Responsive homepage layout
+- Main navigation
+- Sample medical specialist cards
+- Overview of the appointment booking process
+- Global CSS styles and reusable design elements
+- Accessible focus indicators and semantic HTML structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Technology Stack
 
-## Expanding the ESLint configuration
+- React
+- JavaScript
+- Vite
+- CSS
+- Git and GitHub
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Design System
+
+The global stylesheet defines reusable CSS variables for brand colors, backgrounds, text, borders, spacing, and border radii. It also includes a CSS reset, a reusable container, button styles, and keyboard focus indicators.
+
+## Getting Started
+
+1. Clone the repository.
+2. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+## Project Status
+
+This project is under development as part of a frontend development course. The current version focuses on the homepage and the initial global design system.
+
+**Note:** The doctors shown are sample data for demonstration purposes, not verified real medical providers.

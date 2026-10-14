@@ -1,0 +1,181 @@
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.stats-section,
+.products-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.section-heading h2,
+.products-section h2 {
+  margin: 0 0 var(--space-sm);
+  font-size: 22px;
+}
+
+.section-heading p,
+.products-section p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-lg);
+}
+
+.products-section {
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-footer {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.dashboard-footer p {
+  margin: 0;
+}
+
+.appointments-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 32px 20px;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+}
+
+.appointments-icon {
+  font-size: 32px;
+}
+
+.appointments-empty h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.appointments-empty p {
+  max-width: 460px;
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+
+  .stat-card {
+    padding: var(--space-md);
+  }
+
+  .stat-card-info h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading h2,
+  .products-section h2 {
+    font-size: 20px;
+  }
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.appointment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.appointment-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.appointment-patient {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.appointment-patient strong {
+  font-size: 15px;
+}
+
+.appointment-patient span,
+.appointment-details > span:first-child {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.appointment-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.appointment-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.appointment-status.confirmed {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.appointment-status.pending {
+  color: #a16207;
+  background: #fef3c7;
+}
+
+@media (max-width: 600px) {
+  .appointment-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .appointment-details {
+    align-items: flex-start;
+  }
+}

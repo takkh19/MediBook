@@ -370,15 +370,20 @@ p {
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 5px 22px rgb(27 42 78 / 3%);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    transform 0.2s ease;
+  
+transition: transform 0.2s ease, opacity 0.2s ease;
+
 }
 
-.doctor-card:hover {
+
+
+.doctor-card:hover,
+.doctor-card:focus-within {
   transform: translateY(-3px);
+  opacity: 0.95;
   border-color: #b6d1ff;
-  box-shadow: 0 12px 30px rgb(27 42 78 / 8%);
 }
+
 
 .doctor-avatar {
   display: grid;
@@ -663,4 +668,84 @@ figcaption {
   .appointment-form {
     padding: 20px;
   }
+}
+
+.confirmation-pulse {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: confirmation-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes confirmation-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirmation-pulse {
+    animation: none;
+  }
+}
+
+
+/* Accessibility: visible keyboard focus */
+:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 4px;
+}
+
+/* Keep the focus indicator visible on form controls */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Doctor search */
+.doctor-search {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 440px;
+  margin: 28px 0 32px;
+}
+
+.doctor-search label {
+  color: var(--color-text, #1b2a4e);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.doctor-search input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border, #dbe3ef);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--color-text, #1b2a4e);
+  font: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor-search input::placeholder {
+  color: #8a96a8;
+}
+
+.doctor-search input:focus {
+  border-color: #b6d1ff;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 10%);
 }

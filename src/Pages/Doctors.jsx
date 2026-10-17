@@ -1,9 +1,32 @@
 import { useDoctors } from "../hooks/useDoctors";
 import DoctorCard from "../components/DoctorCard/DoctorCard";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
+import { useEffect, useRef } from "react";
 
 function Doctors() {
-    const { doctors } = useDoctors();
+    const { doctors, searchTerm, setSearchTerm } = useDoctors();
+
+    const doctorGridRef = useRef(null);
+
+    useEffect(() => {
+        const doctorGrid = doctorGridRef.current;
+
+        if (!doctorGrid) return;
+
+        function handleDoctorClick(event) {
+            const link = event.target.closest('[data-doctor-action="book"]');
+
+            if (!link || !doctorGrid.contains(link)) return;
+
+            console.log("Doctor selected:", link.dataset.doctorId);
+        }
+
+        doctorGrid.addEventListener("click", handleDoctorClick);
+
+        return () => {
+            doctorGrid.removeEventListener("click", handleDoctorClick);
+        };
+    }, []);
 
     return (
         <div className="app">
@@ -37,7 +60,18 @@ function Doctors() {
                         <span className="doctor-count">{doctors.length} სპეციალისტი</span>
                     </div>
 
-                    <div className="doctor-grid">
+                    <div className="doctor-search">
+                        <label htmlFor="doctor-search">ექიმის ძიება</label>
+                        <input
+                            id="doctor-search"
+                            type="search"
+                            value={searchTerm}
+                            onChange={(event) => setSearchTerm(event.target.value)}
+                            placeholder="შეიყვანე ექიმის სახელი ან სპეციალობა..."
+                        />
+                    </div>
+
+                    <div className="doctor-grid" ref={doctorGridRef}>
                         {doctors.map((doctor) => (
                             <DoctorCard key={doctor.id} doctor={doctor} />
                         ))}

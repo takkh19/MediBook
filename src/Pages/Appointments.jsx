@@ -21,7 +21,6 @@ function Appointment() {
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const selectedDoctor = doctors.find(
@@ -31,7 +30,6 @@ function Appointment() {
   function handleSubmit(event) {
     event.preventDefault();
     setSubmitted(true);
-    setMessage("თქვენი მოთხოვნა წარმატებით მომზადდა. ეს დემო ფორმაა და მონაცემები არ იგზავნება.");
   }
 
   return (
@@ -49,9 +47,17 @@ function Appointment() {
           </div>
 
           {submitted ? (
-            <article className="step-card" aria-live="polite">
-              <h2>მოთხოვნა მომზადებულია</h2>
-              <p>{message}</p>
+           
+<article className="step-card" aria-live="polite">
+  <h2>
+    <span className="confirmation-pulse" aria-hidden="true"></span>
+    ვიზიტის მოთხოვნა მიღებულია
+  </h2>
+  <p>
+    გმადლობთ! თქვენი მოთხოვნა წარმატებით მომზადდა.
+    ეს დემო ვერსიაა — რეალური დაჯავშნა ჯერ არ ხორციელდება.
+  </p>
+
               <p>ექიმი: {selectedDoctor?.name || "არ არის არჩეული"}</p>
               <p>პაციენტი: {patientName}</p>
               <p>თარიღი: {date}</p>

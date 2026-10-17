@@ -1,6 +1,7 @@
 
 import { Link, useSearchParams } from "react-router-dom";
 import { useState } from "react";
+import SiteHeader from "../components/SiteHeader/SiteHeader";
 
 const doctors = [
   { id: "1", name: "ნინო ბერიძე", specialty: "კარდიოლოგი" },
@@ -35,18 +36,7 @@ function Appointment() {
 
   return (
     <div className="app">
-      <header className="site-header">
-        <Link className="brand" to="/">
-          <span className="brand-icon" aria-hidden="true">+</span>
-          MediBook
-        </Link>
-
-        <nav className="navigation" aria-label="მთავარი ნავიგაცია">
-          <Link to="/">მთავარი</Link>
-          <Link to="/doctors">ექიმები</Link>
-          <Link to="/about">ჩვენ შესახებ</Link>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="doctors-section" aria-labelledby="appointment-title">

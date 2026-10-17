@@ -1,23 +1,9 @@
 
 import { Link } from "react-router-dom";
-function Home() {
+import SiteHeader from "../components/SiteHeader/SiteHeader";function Home() {
   return (
     <div className="app">
-      <header className="site-header">
-        <Link className="brand" to="/" aria-label="MediBook მთავარი გვერდი">
-          <span className="brand-icon" aria-hidden="true">+</span>
-          MediBook
-        </Link>
-
-        <nav className="navigation" aria-label="მთავარი ნავიგაცია">
-          <Link to="/">მთავარი</Link>
-          <Link to="/doctors">ექიმები</Link>
-          <Link to="/appointments">ვიზიტის დაგეგმვა</Link>
-          <Link to="/about">ჩვენ შესახებ</Link>
-        </nav>
-
-        <Link className="button" to="/doctors">ექიმის მოძებნა</Link>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="hero-section" aria-labelledby="hero-title">

@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 
-function DoctorCard({ doctor }) {
+function DoctorCard({ doctor, onEdit, onDelete }) {
     return (
         <article className="doctor-card">
             <div className="doctor-avatar" aria-hidden="true">
@@ -11,7 +12,6 @@ function DoctorCard({ doctor }) {
             <p className="doctor-specialty">{doctor.specialty}</p>
             <p className="doctor-experience">{doctor.experience}</p>
 
-
             <Link
                 className="button button-outline doctor-button"
                 to={`/appointments?doctor=${doctor.id}`}
@@ -21,6 +21,23 @@ function DoctorCard({ doctor }) {
                 ვიზიტის დაგეგმვა
             </Link>
 
+            <div className="doctor-card-actions">
+                <button
+                    type="button"
+                    className="button button-outline"
+                    onClick={() => onEdit(doctor)}
+                >
+                    რედაქტირება
+                </button>
+
+                <button
+                    type="button"
+                    className="button button-outline"
+                    onClick={() => onDelete(doctor)}
+                >
+                    წაშლა
+                </button>
+            </div>
         </article>
     );
 }

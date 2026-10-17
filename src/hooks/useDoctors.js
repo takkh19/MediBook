@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { getDoctors } from "../services/doctorsServices";
 
 export function useDoctors() {
-  const [doctors] = useState(() => getDoctors());
+  const [doctors, setDoctors] = useState(() => getDoctors());
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
@@ -24,9 +24,35 @@ export function useDoctors() {
     );
   });
 
+  function addDoctor(doctorData) {
+    const newDoctor = {
+      ...doctorData,
+      id: Date.now(),
+    };
+
+    setDoctors((currentDoctors) => [...currentDoctors, newDoctor]);
+  }
+
+  function updateDoctor(updatedDoctor) {
+    setDoctors((currentDoctors) =>
+      currentDoctors.map((doctor) =>
+        doctor.id === updatedDoctor.id ? updatedDoctor : doctor
+      )
+    );
+  }
+
+  function deleteDoctor(doctorId) {
+    setDoctors((currentDoctors) =>
+      currentDoctors.filter((doctor) => doctor.id !== doctorId)
+    );
+  }
+
   return {
     doctors: filteredDoctors,
     searchTerm,
     setSearchTerm,
+    addDoctor,
+    updateDoctor,
+    deleteDoctor,
   };
 }

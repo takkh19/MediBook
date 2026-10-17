@@ -1,0 +1,125 @@
+
+.doctor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  background: rgba(17, 24, 39, 0.6);
+}
+
+.doctor-modal {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 28px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+  color: #1b2a4e;
+}
+
+.doctor-modal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.doctor-modal-heading h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.doctor-modal-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #1b2a4e;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.doctor-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doctor-modal-form label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.doctor-modal-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1b2a4e;
+  font: inherit;
+}
+
+.doctor-modal-form input:focus {
+  outline: 2px solid #9bbcff;
+  outline-offset: 2px;
+}
+
+.doctor-modal-form input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.doctor-form-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.doctor-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.doctor-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media (max-width: 520px) {
+  .doctor-modal-overlay {
+    padding: 12px;
+  }
+
+  .doctor-modal {
+    padding: 20px;
+    max-height: calc(100vh - 24px);
+  }
+
+  .doctor-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .doctor-modal-actions .button {
+    width: 100%;
+  }
+}

@@ -1,10 +1,51 @@
 import { useDoctors } from "../hooks/useDoctors";
 import DoctorCard from "../components/DoctorCard/DoctorCard";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
-import { useEffect, useRef } from "react";
-
+import { useCallback, useEffect, useRef, useState } from "react";
+import DoctorModal from "../components/DoctorModal/DoctorModal";
 function Doctors() {
-    const { doctors, searchTerm, setSearchTerm } = useDoctors();
+    const {
+        doctors,
+        searchTerm,
+        setSearchTerm,
+        addDoctor,
+        updateDoctor,
+        deleteDoctor,
+    } = useDoctors();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [doctorToEdit, setDoctorToEdit] = useState(null);
+
+    function handleAddDoctor() {
+        setDoctorToEdit(null);
+        setIsModalOpen(true);
+    }
+
+    function handleEditDoctor(doctor) {
+        setDoctorToEdit(doctor);
+        setIsModalOpen(true);
+    }
+
+    function handleSaveDoctor(doctorData) {
+        if (doctorToEdit) {
+            updateDoctor({
+                ...doctorData,
+                id: doctorToEdit.id,
+            });
+        } else {
+            addDoctor(doctorData);
+        }
+    }
+
+    function handleDeleteDoctor(doctor) {
+        const confirmed = window.confirm(
+            `ნამდვილად გსურს ექიმის წაშლა: ${doctor.name}?`
+        );
+
+        if (confirmed) {
+            deleteDoctor(doctor.id);
+        }
+    }
 
     const doctorGridRef = useRef(null);
 
@@ -26,6 +67,9 @@ function Doctors() {
         return () => {
             doctorGrid.removeEventListener("click", handleDoctorClick);
         };
+    }, []);
+    const handleCloseModal = useCallback(() => {
+        setIsModalOpen(false);
     }, []);
 
     return (
@@ -57,6 +101,13 @@ function Doctors() {
                             <h2 id="doctors-list-title">ექიმების სია</h2>
                             <p>აირჩიე სპეციალისტი და გააგრძელე ვიზიტის დაგეგმვა.</p>
                         </div>
+                        <button
+                            type="button"
+                            className="button"
+                            onClick={handleAddDoctor}
+                        >
+                            + ახალი ექიმის დამატება
+                        </button>
                         <span className="doctor-count">{doctors.length} სპეციალისტი</span>
                     </div>
 
@@ -73,7 +124,12 @@ function Doctors() {
 
                     <div className="doctor-grid" ref={doctorGridRef}>
                         {doctors.map((doctor) => (
-                            <DoctorCard key={doctor.id} doctor={doctor} />
+                            <DoctorCard
+                                key={doctor.id}
+                                doctor={doctor}
+                                onEdit={handleEditDoctor}
+                                onDelete={handleDeleteDoctor}
+                            />
                         ))}
                     </div>
                 </section>
@@ -83,6 +139,13 @@ function Doctors() {
                 <p>© 2026 MediBook. ყველა უფლება დაცულია.</p>
                 <a href="mailto:info@medibook.ge">დაგვიკავშირდით</a>
             </footer>
+            <DoctorModal
+                key={`${isModalOpen}-${doctorToEdit ? doctorToEdit.id : "new"}`}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onSave={handleSaveDoctor}
+                doctorToEdit={doctorToEdit}
+            />
         </div>
     );
 }

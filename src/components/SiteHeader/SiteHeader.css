@@ -9,7 +9,6 @@
   border-bottom: 1px solid #e8edf5;
 }
 
-/* Logo on the left */
 .site-header .brand {
   display: inline-flex;
   align-items: center;
@@ -34,7 +33,7 @@
   font-size: 26px;
 }
 
-/* Navigation centered in the header */
+/* Desktop navigation */
 .site-header .navigation {
   display: flex;
   align-items: center;
@@ -57,13 +56,17 @@
   color: #0463fa;
 }
 
-/* Action button on the right */
 .site-header .site-header-action {
   justify-self: end;
   white-space: nowrap;
 }
 
-/* Tablet layout */
+/* Hidden on desktop */
+.mobile-menu-toggle {
+  display: none;
+}
+
+/* Tablet */
 @media (max-width: 1000px) {
   .site-header {
     grid-template-columns: 1fr auto;
@@ -83,30 +86,74 @@
   }
 }
 
-/* Mobile layout */
+/* Mobile */
 @media (max-width: 600px) {
   .site-header {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 18px;
-    padding: 18px 5%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 5%;
   }
 
   .site-header .brand {
-    align-self: flex-start;
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 22px;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    grid-column: 2;
+    grid-row: 1;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #e8edf5;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #0463fa;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+  .mobile-menu-toggle:focus-visible {
+    outline: 2px solid #0463fa;
+    outline-offset: 3px;
   }
 
   .site-header .navigation {
-    justify-content: center;
-    gap: 12px 16px;
+    display: none;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 0;
+  }
+
+  .site-header .navigation.navigation-open {
+    display: flex;
   }
 
   .site-header .navigation a {
-    font-size: 14px;
+    padding: 13px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+  }
+
+  .site-header .navigation a:hover,
+  .site-header .navigation a.active {
+    background: #f0f6ff;
   }
 
   .site-header .site-header-action {
-    align-self: flex-start;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: stretch;
+    text-align: center;
+    white-space: normal;
   }
 }

@@ -1,25 +1,62 @@
 
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./SiteHeader.css";
 
 function SiteHeader() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    function closeMenu() {
+        setIsMenuOpen(false);
+    }
+
     return (
         <header className="site-header">
-            <Link className="brand" to="/" aria-label="MediBook მთავარი გვერდი">
+            <Link
+                className="brand"
+                to="/"
+                aria-label="MediBook მთავარი გვერდი"
+                onClick={closeMenu}
+            >
                 <span className="brand-icon" aria-hidden="true">+</span>
                 MediBook
             </Link>
 
+            <button
+                type="button"
+                className="mobile-menu-toggle"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label={isMenuOpen ? "მენიუს დახურვა" : "მენიუს გახსნა"}
+                aria-expanded={isMenuOpen}
+                aria-controls="main-navigation"
+            >
+                {isMenuOpen ? "✕" : "☰"}
+            </button>
 
-            <nav className="navigation" aria-label="მთავარი ნავიგაცია">
-                <NavLink to="/" end>მთავარი</NavLink>
-                <NavLink to="/doctors">ექიმები</NavLink>
-                <NavLink to="/appointments">ვიზიტის დაგეგმვა</NavLink>
-                <NavLink to="/about">ჩვენ შესახებ</NavLink>
+            <nav
+                id="main-navigation"
+                className={`navigation ${isMenuOpen ? "navigation-open" : ""}`}
+                aria-label="მთავარი ნავიგაცია"
+            >
+                <NavLink to="/" end onClick={closeMenu}>
+                    მთავარი
+                </NavLink>
+                <NavLink to="/doctors" onClick={closeMenu}>
+                    ექიმები
+                </NavLink>
+                <NavLink to="/appointments" onClick={closeMenu}>
+                    ვიზიტის დაგეგმვა
+                </NavLink>
+                <NavLink to="/about" onClick={closeMenu}>
+                    ჩვენ შესახებ
+                </NavLink>
             </nav>
 
-
-            <Link className="button site-header-action" to="/">
+            <Link
+                className="button site-header-action"
+                to="/"
+                onClick={closeMenu}
+            >
                 მთავარ გვერდზე დაბრუნება
             </Link>
         </header>

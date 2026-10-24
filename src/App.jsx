@@ -11,7 +11,7 @@ import "./App.css";
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <BrowserRouter basename="/MediBook">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

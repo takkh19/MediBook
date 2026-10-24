@@ -3,15 +3,37 @@ import DoctorCard from "../components/DoctorCard/DoctorCard";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
 import { useCallback, useEffect, useRef, useState } from "react";
 import DoctorModal from "../components/DoctorModal/DoctorModal";
+
+
 function Doctors() {
-    const {
-        doctors,
-        searchTerm,
-        setSearchTerm,
-        addDoctor,
-        updateDoctor,
-        deleteDoctor,
-    } = useDoctors();
+   const {
+    doctors,
+    isDemoData,
+    searchTerm,
+    setSearchTerm,
+    addDoctor,
+    updateDoctor,
+    deleteDoctor,
+} = useDoctors();
+
+
+useEffect(() => {
+    console.table(doctors);
+
+    console.time("MediBook doctors diagnostic");
+
+    // Measure the preparation of diagnostic data.
+    const diagnosticRows = doctors.map((doctor) => ({
+        id: doctor.id,
+        name: doctor.name,
+        specialty: doctor.specialty,
+    }));
+
+    console.timeEnd("MediBook doctors diagnostic");
+
+    console.table(diagnosticRows);
+}, [doctors]);
+
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [doctorToEdit, setDoctorToEdit] = useState(null);
@@ -77,6 +99,20 @@ function Doctors() {
             <SiteHeader />
 
             <main>
+                {isDemoData && (
+    <div
+        role="status"
+        style={{
+            padding: "12px 20px",
+            backgroundColor: "#fff3cd",
+            color: "#664d03",
+            textAlign: "center",
+            borderBottom: "1px solid #ffecb5",
+        }}
+    >
+        ⚠️ ნაჩვენებია ლოკალური დემო მონაცემები
+    </div>
+)}
                 <section className="hero-section" aria-labelledby="doctors-page-title">
                     <div className="hero-content">
                         <span className="eyebrow">ჩვენი სპეციალისტები</span>

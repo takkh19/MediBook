@@ -44,11 +44,48 @@ const doctors = [
   },
 ];
 
-/**
- * Returns the list of doctors.
- * @returns {import("../types/doctorTypes").Doctor[]}
- */
-
-export function getDoctors() {
+// Returns local demo data if the API is unavailable.
+export function getLocalDoctors() {
   return doctors;
+}
+
+// Attempts to load doctors from the API.
+// If the request fails, local data is returned instead.
+export async function getDoctors() {
+  try {
+    
+const response = await fetch("/api/doctors");
+
+if (!response.ok) {
+  throw new Error(`API error: ${response.status}`);
+}
+
+const contentType = response.headers.get("content-type") || "";
+
+if (!contentType.includes("application/json")) {
+  throw new Error("API returned a non-JSON response");
+}
+
+const data = await response.json();
+
+
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid doctors data");
+    }
+
+    return {
+      doctors: data,
+      isDemoData: false,
+    };
+  } catch (error) {
+    console.warn(
+      "API unavailable. Using local demo doctors instead.",
+      error
+    );
+
+    return {
+      doctors: getLocalDoctors(),
+      isDemoData: true,
+    };
+  }
 }

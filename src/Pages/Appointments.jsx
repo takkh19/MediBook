@@ -1,6 +1,7 @@
 
 import { Link, useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { z } from "zod";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
 
 const doctors = [
@@ -11,25 +12,83 @@ const doctors = [
   { id: "5", name: "მარიამ ჯაფარიძე", specialty: "პედიატრი" },
   { id: "6", name: "ლევან გელაშვილი", specialty: "ორთოპედი" },
 ];
-
+const appointmentSchema = z.object({
+  doctorId: z.string().min(1, "გთხოვთ, აირჩიოთ ექიმი."),
+  patientName: z.string().trim().min(3, "შეიყვანეთ სახელი და გვარი."),
+  email: z.string().trim().email("შეიყვანეთ სწორი ელფოსტა."),
+  date: z.string().min(1, "აირჩიეთ ვიზიტის თარიღი."),
+  time: z.string().min(1, "აირჩიეთ ვიზიტის დრო."),
+});
 function Appointment() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchParams] = useSearchParams();
- const [selectedDoctorId, setSelectedDoctorId] = useState(
-  searchParams.get("doctor") || ""
-);
+  const [selectedDoctorId, setSelectedDoctorId] = useState(
+    searchParams.get("doctor") || ""
+  );
   const [patientName, setPatientName] = useState("");
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [submitted, setSubmitted] = useState(false);
-
+  const [isBookingServiceUnavailable] = useState(true);
+  const [formError, setFormError] = useState("");
+  const submissionLock = useRef(false);
   const selectedDoctor = doctors.find(
     (doctor) => doctor.id === selectedDoctorId
   );
 
-  function handleSubmit(event) {
+
+  async function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(true);
+
+    if (submissionLock.current) return;
+
+    const result = appointmentSchema.safeParse({
+      doctorId: selectedDoctorId,
+      patientName,
+      email,
+      date,
+      time,
+    });
+
+    if (!result.success) {
+      setFormError(result.error.issues[0].message);
+      return;
+    }
+
+    const bookingKey = `medibook-booking-${date}-${selectedDoctorId}-${time}`;
+    const existingBooking = localStorage.getItem(bookingKey);
+
+    if (existingBooking) {
+      setFormError(
+        "ეს დრო უკვე დაჯავშნილია ამ ექიმთან. გთხოვთ, აირჩიოთ სხვა დრო."
+      );
+      return;
+    }
+
+    submissionLock.current = true;
+    setIsSubmitting(true);
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    setFormError("");
+
+    try {
+      localStorage.setItem(
+        bookingKey,
+        JSON.stringify({
+          doctorId: selectedDoctorId,
+          patientName: result.data.patientName,
+          email: result.data.email,
+          date,
+          time,
+        })
+      );
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Failed to save demo booking:", error);
+      setFormError("დაჯავშნა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.");
+      submissionLock.current = false;
+    }
   }
 
   return (
@@ -37,6 +96,27 @@ function Appointment() {
       <SiteHeader />
 
       <main>
+        {isBookingServiceUnavailable && (
+          <div
+            role="alert"
+            style={{
+              padding: "14px 20px",
+              margin: "0 0 20px",
+              backgroundColor: "#fff3cd",
+              color: "#664d03",
+              border: "1px solid #ffecb5",
+              borderRadius: "8px",
+              textAlign: "center",
+            }}
+
+          >
+            <strong>⚠️ ონლაინ დაჯავშნის სერვისი დროებით მიუწვდომელია.</strong>
+            <p style={{ margin: "6px 0 0" }}>
+              ვიზიტის დასაგეგმად დაგვიკავშირდით:{" "}
+              <a href="tel:5555555555">555 55 55 55</a>
+            </p>
+          </div>
+        )}
         <section className="doctors-section" aria-labelledby="appointment-title">
           <div className="section-heading">
             <div>
@@ -47,16 +127,16 @@ function Appointment() {
           </div>
 
           {submitted ? (
-           
-<article className="step-card" aria-live="polite">
-  <h2>
-    <span className="confirmation-pulse" aria-hidden="true"></span>
-    ვიზიტის მოთხოვნა მიღებულია
-  </h2>
-  <p>
-    გმადლობთ! თქვენი მოთხოვნა წარმატებით მომზადდა.
-    ეს დემო ვერსიაა — რეალური დაჯავშნა ჯერ არ ხორციელდება.
-  </p>
+
+            <article className="step-card" aria-live="polite">
+              <h2>
+                <span className="confirmation-pulse" aria-hidden="true"></span>
+                ვიზიტის მოთხოვნა მიღებულია
+              </h2>
+              <p>
+                გმადლობთ! თქვენი მოთხოვნა წარმატებით მომზადდა.
+                ეს დემო ვერსიაა — რეალური დაჯავშნა ჯერ არ ხორციელდება.
+              </p>
 
               <p>ექიმი: {selectedDoctor?.name || "არ არის არჩეული"}</p>
               <p>პაციენტი: {patientName}</p>
@@ -68,6 +148,11 @@ function Appointment() {
             </article>
           ) : (
             <form className="appointment-form" onSubmit={handleSubmit}>
+              {formError && (
+                <p role="alert" style={{ color: "#b42318" }}>
+                  {formError}
+                </p>
+              )}
               <label htmlFor="doctor">ექიმი</label>
               <select
                 id="doctor"
@@ -127,8 +212,12 @@ function Appointment() {
                 <option value="16:00">16:00</option>
               </select>
 
-              <button className="button" type="submit">
-                ვიზიტის მოთხოვნა
+              <button
+                className="button"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "მუშავდება..." : "ვიზიტის მოთხოვნა"}
               </button>
             </form>
           )}

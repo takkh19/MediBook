@@ -3,9 +3,29 @@ import { useEffect, useState } from "react";
 import { getDoctors } from "../services/doctorsServices";
 
 export function useDoctors() {
-  const [doctors, setDoctors] = useState(() => getDoctors());
+  const [doctors, setDoctors] = useState([]);
+  const [isDemoData, setIsDemoData] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadDoctors() {
+      const result = await getDoctors();
+
+      if (isActive) {
+        setDoctors(result.doctors);
+        setIsDemoData(result.isDemoData);
+      }
+    }
+
+    loadDoctors();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -15,9 +35,9 @@ export function useDoctors() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  const filteredDoctors = doctors.filter((doctor) => {
-    const query = debouncedSearchTerm.trim().toLowerCase();
+  const query = debouncedSearchTerm.trim().toLowerCase();
 
+  const filteredDoctors = doctors.filter((doctor) => {
     return (
       doctor.name.toLowerCase().includes(query) ||
       doctor.specialty.toLowerCase().includes(query)
@@ -49,6 +69,7 @@ export function useDoctors() {
 
   return {
     doctors: filteredDoctors,
+    isDemoData,
     searchTerm,
     setSearchTerm,
     addDoctor,

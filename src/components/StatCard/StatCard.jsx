@@ -1,11 +1,12 @@
 
+import Icon from "../Icon/Icon.jsx";
 import "./StatCard.css";
 
 function StatCard({ title, value, change, icon }) {
   return (
     <article className="stat-card">
       <div className="stat-card-top">
-        <span className="stat-card-icon">{icon}</span>
+        <span className="stat-card-icon"><Icon name={icon} size={22} /></span>
         <span className="stat-card-change">{change}</span>
       </div>
 

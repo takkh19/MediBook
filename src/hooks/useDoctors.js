@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getDoctors } from "../services/doctorsServices";
 
 export function useDoctors() {
@@ -37,35 +37,38 @@ export function useDoctors() {
 
   const query = debouncedSearchTerm.trim().toLowerCase();
 
-  const filteredDoctors = doctors.filter((doctor) => {
-    return (
+  // Recalculate the filtered list only when the source list or query changes.
+  const filteredDoctors = useMemo(() => {
+    if (!query) return doctors;
+
+    return doctors.filter((doctor) =>
       doctor.name.toLowerCase().includes(query) ||
       doctor.specialty.toLowerCase().includes(query)
     );
-  });
+  }, [doctors, query]);
 
-  function addDoctor(doctorData) {
+  const addDoctor = useCallback((doctorData) => {
     const newDoctor = {
       ...doctorData,
       id: Date.now(),
     };
 
     setDoctors((currentDoctors) => [...currentDoctors, newDoctor]);
-  }
+  }, []);
 
-  function updateDoctor(updatedDoctor) {
+  const updateDoctor = useCallback((updatedDoctor) => {
     setDoctors((currentDoctors) =>
       currentDoctors.map((doctor) =>
         doctor.id === updatedDoctor.id ? updatedDoctor : doctor
       )
     );
-  }
+  }, []);
 
-  function deleteDoctor(doctorId) {
+  const deleteDoctor = useCallback((doctorId) => {
     setDoctors((currentDoctors) =>
       currentDoctors.filter((doctor) => doctor.id !== doctorId)
     );
-  }
+  }, []);
 
   return {
     doctors: filteredDoctors,

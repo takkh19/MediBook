@@ -1,7 +1,8 @@
 
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
-function DoctorCard({ doctor, onEdit, onDelete }) {
+function DoctorCardComponent({ doctor, onEdit, onDelete }) {
     return (
         <article className="doctor-card">
             <div className="doctor-avatar" aria-hidden="true">
@@ -42,4 +43,4 @@ function DoctorCard({ doctor, onEdit, onDelete }) {
     );
 }
 
-export default DoctorCard;
+export default memo(DoctorCardComponent);

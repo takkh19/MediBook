@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import Icon from "../Icon/Icon.jsx";
 import "./SiteHeader.css";
 
 function SiteHeader() {
@@ -30,7 +31,7 @@ function SiteHeader() {
                 aria-expanded={isMenuOpen}
                 aria-controls="main-navigation"
             >
-                {isMenuOpen ? "✕" : "☰"}
+                <Icon name={isMenuOpen ? "close" : "menu"} size={22} />
             </button>
 
             <nav

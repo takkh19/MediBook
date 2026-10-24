@@ -796,3 +796,14 @@ textarea:focus-visible {
     padding: 12px;
   }
 }
+
+
+/* Lightweight fallback shown while a route's lazy-loaded chunk is downloading. */
+.route-loading {
+    min-height: 40vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    color: var(--color-text, #243047);
+    text-align: center;
+}

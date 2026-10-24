@@ -26,28 +26,28 @@ function Dashboard() {
                             title="ვიზიტი"
                             value="128"
                             change="სულ ვიზიტები"
-                            icon="📅"
+                            icon="calendar"
                         />
 
                         <StatCard
                             title="ექიმი"
                             value="24"
                             change="რეგისტრირებული ექიმი"
-                            icon="🩺"
+                            icon="stethoscope"
                         />
 
                         <StatCard
                             title="პაციენტი"
                             value="356"
                             change="სულ პაციენტები"
-                            icon="👥"
+                            icon="users"
                         />
 
                         <StatCard
                             title="მოლოდინში"
                             value="18"
                             change="დასადასტურებელი ვიზიტები"
-                            icon="⏳"
+                            icon="clock"
                         />
                     </div>
                 </section>

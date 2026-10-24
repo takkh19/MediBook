@@ -75,6 +75,8 @@ function About() {
             <img
               src="https://placehold.co/800x400?text=MediBook"
               alt="MediBook-ის სამედიცინო პლატფორმის საილუსტრაციო სურათი"
+              loading="lazy"
+              decoding="async"
               style={{
                 display: "block",
                 width: "100%",

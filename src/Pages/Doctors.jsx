@@ -1,7 +1,7 @@
 import { useDoctors } from "../hooks/useDoctors";
 import DoctorCard from "../components/DoctorCard/DoctorCard";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import DoctorModal from "../components/DoctorModal/DoctorModal";
 
 
@@ -17,38 +17,20 @@ function Doctors() {
 } = useDoctors();
 
 
-useEffect(() => {
-    console.table(doctors);
-
-    console.time("MediBook doctors diagnostic");
-
-    // Measure the preparation of diagnostic data.
-    const diagnosticRows = doctors.map((doctor) => ({
-        id: doctor.id,
-        name: doctor.name,
-        specialty: doctor.specialty,
-    }));
-
-    console.timeEnd("MediBook doctors diagnostic");
-
-    console.table(diagnosticRows);
-}, [doctors]);
-
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
     const [doctorToEdit, setDoctorToEdit] = useState(null);
 
-    function handleAddDoctor() {
+    const handleAddDoctor = useCallback(() => {
         setDoctorToEdit(null);
         setIsModalOpen(true);
-    }
+    }, []);
 
-    function handleEditDoctor(doctor) {
+    const handleEditDoctor = useCallback((doctor) => {
         setDoctorToEdit(doctor);
         setIsModalOpen(true);
-    }
+    }, []);
 
-    function handleSaveDoctor(doctorData) {
+    const handleSaveDoctor = useCallback((doctorData) => {
         if (doctorToEdit) {
             updateDoctor({
                 ...doctorData,
@@ -57,9 +39,9 @@ useEffect(() => {
         } else {
             addDoctor(doctorData);
         }
-    }
+    }, [doctorToEdit, updateDoctor, addDoctor]);
 
-    function handleDeleteDoctor(doctor) {
+    const handleDeleteDoctor = useCallback((doctor) => {
         const confirmed = window.confirm(
             `ნამდვილად გსურს ექიმის წაშლა: ${doctor.name}?`
         );
@@ -67,30 +49,9 @@ useEffect(() => {
         if (confirmed) {
             deleteDoctor(doctor.id);
         }
-    }
+    }, [deleteDoctor]);
 
-    const doctorGridRef = useRef(null);
-
-    useEffect(() => {
-        const doctorGrid = doctorGridRef.current;
-
-        if (!doctorGrid) return;
-
-        function handleDoctorClick(event) {
-            const link = event.target.closest('[data-doctor-action="book"]');
-
-            if (!link || !doctorGrid.contains(link)) return;
-
-            console.log("Doctor selected:", link.dataset.doctorId);
-        }
-
-        doctorGrid.addEventListener("click", handleDoctorClick);
-
-        return () => {
-            doctorGrid.removeEventListener("click", handleDoctorClick);
-        };
-    }, []);
-    const handleCloseModal = useCallback(() => {
+const handleCloseModal = useCallback(() => {
         setIsModalOpen(false);
     }, []);
 
@@ -158,7 +119,7 @@ useEffect(() => {
                         />
                     </div>
 
-                    <div className="doctor-grid" ref={doctorGridRef}>
+                    <div className="doctor-grid">
                         {doctors.map((doctor) => (
                             <DoctorCard
                                 key={doctor.id}

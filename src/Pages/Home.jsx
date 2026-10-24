@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
-import SiteHeader from "../components/SiteHeader/SiteHeader";function Home() {
+import SiteHeader from "../components/SiteHeader/SiteHeader";
+import Icon from "../components/Icon/Icon.jsx";function Home() {
   return (
     <div className="app">
       <SiteHeader />
@@ -28,7 +29,7 @@ import SiteHeader from "../components/SiteHeader/SiteHeader";function Home() {
             <h2>შენი ჯანმრთელობა ჩვენი პრიორიტეტია</h2>
 
             <article className="appointment-preview">
-              <div className="calendar-icon" aria-hidden="true">▦</div>
+              <div className="calendar-icon"><Icon name="calendarGrid" size={24} /></div>
               <div>
                 <strong>სამედიცინო ვიზიტი</strong>
                 <p>დაჯავშნე სასურველ დროს</p>

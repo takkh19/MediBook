@@ -63,6 +63,11 @@ function SiteHeader() {
                 <NavLink to="/appointments" onClick={closeMenu}>
                     ვიზიტის დაგეგმვა
                 </NavLink>
+                {currentUser && (
+                    <NavLink to="/my-appointments" onClick={closeMenu}>
+                        ჩემი ვიზიტები
+                    </NavLink>
+                )}
 
                 <NavLink to="/about" onClick={closeMenu}>
                     ჩვენ შესახებ

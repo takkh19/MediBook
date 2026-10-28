@@ -9,6 +9,9 @@ const Doctors = lazy(() => import("./Pages/Doctors.jsx"));
 const Appointments = lazy(() => import("./Pages/Appointments.jsx"));
 const Dashboard = lazy(() => import("./Dashboard.jsx"));
 const Auth = lazy(() => import("./Pages/Auth"));
+const MyAppointments = lazy(() =>
+  import("./Pages/MyAppointments")
+);
 
 function RouteLoading() {
   return (
@@ -30,6 +33,7 @@ function App() {
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/my-appointments" element={<MyAppointments />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

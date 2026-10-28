@@ -1,10 +1,11 @@
 
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { z } from "zod";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
 import { useDoctors } from "../hooks/useDoctors";
 import { getAvailableSlots } from "../utils/appointmentSlots";
+import { getCurrentUser } from "../utils/auth";
 
 const appointmentSchema = z.object({
   doctorId: z.string().min(1, "გთხოვთ, აირჩიოთ ექიმი."),
@@ -14,6 +15,8 @@ const appointmentSchema = z.object({
   time: z.string().min(1, "აირჩიეთ ვიზიტის დრო."),
 });
 function Appointment() {
+  const currentUser = getCurrentUser();
+  const navigate = useNavigate();
   const { doctors } = useDoctors();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchParams] = useSearchParams();
@@ -37,68 +40,106 @@ function Appointment() {
   );
 
 
-  async function handleSubmit(event) {
-    event.preventDefault();
 
-    if (submissionLock.current) return;
+async function handleSubmit(event) {
+  event.preventDefault();
 
-    const result = appointmentSchema.safeParse({
-      doctorId: selectedDoctorId,
-      patientName,
-      email,
-      date,
-      time,
-    });
+  const currentUser = getCurrentUser();
 
-    if (!result.success) {
-      setFormError(result.error.issues[0].message);
-      return;
-    }
+  if (!currentUser) {
+    navigate("/auth");
+    return;
+  }
 
-    const bookingKey = `medibook-booking-${date}-${selectedDoctorId}-${time}`;
-    const existingBooking = localStorage.getItem(bookingKey);
+  if (submissionLock.current) return;
 
-    if (existingBooking) {
-      setFormError(
-        "ეს დრო უკვე დაჯავშნილია ამ ექიმთან. გთხოვთ, აირჩიოთ სხვა დრო."
-      );
-      return;
-    }
-    if (!selectedDoctor) {
-      setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
-      return;
-    }
+  const result = appointmentSchema.safeParse({
+    doctorId: selectedDoctorId,
+    patientName,
+    email,
+    date,
+    time,
+  });
+
+  if (!result.success) {
+    setFormError(result.error.issues[0].message);
+    return;
+  }
+
+  if (!selectedDoctor) {
+    setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
+    return;
+  }
+
+  if (!getAvailableSlots(selectedDoctorId, date).includes(time)) {
+    setFormError(
+      "არჩეული დრო მიუწვდომელია. გთხოვთ, აირჩიოთ სხვა დრო."
+    );
+    setTime("");
+    return;
+  }
+
+  const bookingKey =
+    `medibook-booking-${date}-${selectedDoctorId}-${time}`;
+
+  if (localStorage.getItem(bookingKey)) {
+    setFormError(
+      "ეს დრო უკვე დაჯავშნილია. გთხოვთ, აირჩიოთ სხვა დრო."
+    );
+    return;
+  }
+
+  submissionLock.current = true;
+  setIsSubmitting(true);
+  setFormError("");
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     if (!getAvailableSlots(selectedDoctorId, date).includes(time)) {
-      setFormError(
-        "არჩეული დრო მიუწვდომელია. გთხოვთ, აირჩიოთ სხვა დრო."
-      );
+      setFormError("არჩეული დრო უკვე დაკავებულია.");
       setTime("");
       return;
     }
-    submissionLock.current = true;
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setFormError("");
 
-    try {
-      localStorage.setItem(
-        bookingKey,
-        JSON.stringify({
-          doctorId: selectedDoctorId,
-          patientName: result.data.patientName,
-          email: result.data.email,
-          date,
-          time,
-        })
-      );
+    const savedAppointments = JSON.parse(
+      localStorage.getItem("medibook-appointments") || "[]"
+    );
 
-      setSubmitted(true);
-    } catch (error) {
-      console.error("Failed to save demo booking:", error);
-      setFormError("დაჯავშნა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.");
-      submissionLock.current = false;
+    if (!Array.isArray(savedAppointments)) {
+      throw new Error("Invalid appointments data");
     }
+
+    const newAppointment = {
+      id: crypto.randomUUID(),
+      userId: currentUser.id,
+      doctorId: selectedDoctorId,
+      doctorName: selectedDoctor.name,
+      patientName: result.data.patientName,
+      email: result.data.email,
+      date,
+      time,
+    };
+
+    localStorage.setItem(
+      "medibook-appointments",
+      JSON.stringify([...savedAppointments, newAppointment])
+    );
+
+    localStorage.setItem(
+      bookingKey,
+      JSON.stringify(newAppointment)
+    );
+
+    setSubmitted(true);
+  } catch {
+    setFormError("დაჯავშნა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.");
+  } finally {
+    setIsSubmitting(false);
+    submissionLock.current = false;
   }
+}
+
 
   return (
     <div className="app">
@@ -136,12 +177,15 @@ function Appointment() {
           </div>
 
           {submitted ? (
-
             <article className="step-card" aria-live="polite">
               <h2>
-                <span className="confirmation-pulse" aria-hidden="true"></span>
+                <span
+                  className="confirmation-pulse"
+                  aria-hidden="true"
+                ></span>
                 ვიზიტის მოთხოვნა მიღებულია
               </h2>
+
               <p>
                 გმადლობთ! თქვენი მოთხოვნა წარმატებით მომზადდა.
                 ეს დემო ვერსიაა — რეალური დაჯავშნა ჯერ არ ხორციელდება.
@@ -151,10 +195,21 @@ function Appointment() {
               <p>პაციენტი: {patientName}</p>
               <p>თარიღი: {date}</p>
               <p>დრო: {time}</p>
+
               <Link className="button" to="/doctors">
                 ექიმების სიაში დაბრუნება
               </Link>
             </article>
+          ) : !currentUser ? (
+            <div className="appointment-login-notice">
+              <h2>ვიზიტის დასაგეგმად გაიარე ავტორიზაცია</h2>
+              <p>
+                ექიმთან ვიზიტის დასაჯავშნად საჭიროა ანგარიშში შესვლა.
+              </p>
+              <Link to="/auth" className="button">
+                შესვლა / რეგისტრაცია
+              </Link>
+            </div>
           ) : (
             <form className="appointment-form" onSubmit={handleSubmit}>
               {formError && (
@@ -162,6 +217,7 @@ function Appointment() {
                   {formError}
                 </p>
               )}
+
               <label htmlFor="doctor">ექიმი</label>
               <select
                 id="doctor"
@@ -179,7 +235,9 @@ function Appointment() {
                 ))}
               </select>
 
-              <label htmlFor="patientName">პაციენტის სახელი და გვარი</label>
+              <label htmlFor="patientName">
+                პაციენტის სახელი და გვარი
+              </label>
               <input
                 id="patientName"
                 value={patientName}
@@ -200,6 +258,7 @@ function Appointment() {
 
               <label htmlFor="date">ვიზიტის თარიღი</label>
               <input
+                id="date"
                 type="date"
                 value={date}
                 min={new Date().toLocaleDateString("en-CA")}
@@ -211,7 +270,6 @@ function Appointment() {
               />
 
               <label htmlFor="time">ვიზიტის დრო</label>
-
               <select
                 id="time"
                 value={time}
@@ -220,7 +278,6 @@ function Appointment() {
                 disabled={!selectedDoctorId || !date}
               >
                 <option value="">აირჩიე თავისუფალი დრო</option>
-
                 {availableSlots.map((slot) => (
                   <option key={slot} value={slot}>
                     {slot}
@@ -234,7 +291,6 @@ function Appointment() {
                   აირჩიე სხვა თარიღი.
                 </p>
               )}
-
 
               <button
                 className="button"

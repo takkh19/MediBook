@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { z } from "zod";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
 import { useDoctors } from "../hooks/useDoctors";
+import { getAvailableSlots } from "../utils/appointmentSlots";
 
 const appointmentSchema = z.object({
   doctorId: z.string().min(1, "გთხოვთ, აირჩიოთ ექიმი."),
@@ -28,8 +29,12 @@ function Appointment() {
   const [formError, setFormError] = useState("");
   const submissionLock = useRef(false);
   const selectedDoctor = doctors.find(
-  (doctor) => String(doctor.id) === selectedDoctorId
-);
+    (doctor) => String(doctor.id) === selectedDoctorId
+  );
+  const availableSlots = getAvailableSlots(
+    selectedDoctorId,
+    date
+  );
 
 
   async function handleSubmit(event) {
@@ -60,9 +65,16 @@ function Appointment() {
       return;
     }
     if (!selectedDoctor) {
-  setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
-  return;
-}
+      setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
+      return;
+    }
+    if (!getAvailableSlots(selectedDoctorId, date).includes(time)) {
+      setFormError(
+        "არჩეული დრო მიუწვდომელია. გთხოვთ, აირჩიოთ სხვა დრო."
+      );
+      setTime("");
+      return;
+    }
     submissionLock.current = true;
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -154,7 +166,10 @@ function Appointment() {
               <select
                 id="doctor"
                 value={selectedDoctorId}
-                onChange={(event) => setSelectedDoctorId(event.target.value)}
+                onChange={(event) => {
+                  setSelectedDoctorId(event.target.value);
+                  setTime("");
+                }}
               >
                 <option value="">აირჩიე ექიმი</option>
                 {doctors.map((doctor) => (
@@ -185,29 +200,41 @@ function Appointment() {
 
               <label htmlFor="date">ვიზიტის თარიღი</label>
               <input
-                id="date"
                 type="date"
                 value={date}
-                onChange={(event) => setDate(event.target.value)}
-                min={new Date().toISOString().split("T")[0]}
+                min={new Date().toLocaleDateString("en-CA")}
+                onChange={(event) => {
+                  setDate(event.target.value);
+                  setTime("");
+                }}
                 required
               />
 
               <label htmlFor="time">ვიზიტის დრო</label>
+
               <select
                 id="time"
                 value={time}
                 onChange={(event) => setTime(event.target.value)}
                 required
+                disabled={!selectedDoctorId || !date}
               >
-                <option value="">აირჩიე დრო</option>
-                <option value="10:00">10:00</option>
-                <option value="11:00">11:00</option>
-                <option value="12:00">12:00</option>
-                <option value="14:00">14:00</option>
-                <option value="15:00">15:00</option>
-                <option value="16:00">16:00</option>
+                <option value="">აირჩიე თავისუფალი დრო</option>
+
+                {availableSlots.map((slot) => (
+                  <option key={slot} value={slot}>
+                    {slot}
+                  </option>
+                ))}
               </select>
+
+              {selectedDoctorId && date && availableSlots.length === 0 && (
+                <p role="status">
+                  ამ თარიღისთვის თავისუფალი დრო არ არის.
+                  აირჩიე სხვა თარიღი.
+                </p>
+              )}
+
 
               <button
                 className="button"

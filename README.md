@@ -1,77 +1,196 @@
-# MediBook
+# MediBook 🏥
 
-**Medical Clinic Appointment Booking System**
+### Medical Clinic Appointment Management Platform
 
-MediBook is a frontend project designed to make medical appointments easier to manage. It provides a simple interface for discovering medical specialists and learning how to arrange an appointment.
+MediBook is a responsive front-end web application designed to simplify the process of discovering medical specialists and managing appointment-related tasks.
 
-## Current Features
+The project provides a user-friendly interface for exploring doctors, searching by name or specialty, and navigating medical appointment information. It was developed as part of a front-end development project, with a focus on reusable React components, responsive design, accessibility, and code maintainability.
 
-- Responsive homepage layout
-- Main navigation
-- Sample medical specialist cards
-- Overview of the appointment booking process
-- Global CSS styles and reusable design elements
-- Accessible focus indicators and semantic HTML structure
+**Live Demo:** https://takkh19.github.io/MediBook/  
+**GitHub Repository:** https://github.com/takkh19/MediBook
 
-## Technology Stack
+---
 
-- React
-- JavaScript
-- Vite
-- CSS
-- Git and GitHub
+## ✨ Features
 
-## Design System
+- **Doctor Directory** — Browse sample medical specialists and their information.
+- **Search and Filtering** — Find doctors by name or specialty.
+- **Responsive Interface** — Layout designed to adapt to different screen sizes.
+- **Reusable Components** — Shared React components for a consistent interface.
+- **Client-Side Routing** — Navigate between application pages using React Router.
+- **Form Validation** — Validate supported form data using Zod.
+- **Loading and Error Handling** — Provide feedback during loading and recover from supported runtime errors.
+- **Demo Data Fallback** — Display local demonstration data when the external doctor data source is unavailable.
+- **Performance Improvements** — Apply component memoization and lazy loading where appropriate.
+- **Accessible UI** — Use semantic HTML and visible keyboard-focus indicators.
 
-The global stylesheet defines reusable CSS variables for brand colors, backgrounds, text, borders, spacing, and border radii. It also includes a CSS reset, a reusable container, button styles, and keyboard focus indicators.
+> **Note:** This is a front-end demonstration project. Sample doctor information is not verified medical-provider data. Demonstration functionality should not be interpreted as a production medical booking service.
 
-## Getting Started
+## 🛠️ Technology Stack
 
-1. Clone the repository.
-2. Install the dependencies:
+| Technology | Purpose |
+|---|---|
+| React | Building the user interface |
+| JavaScript (ES Modules) | Application logic |
+| Vite | Development server and production build |
+| React Router | Client-side navigation |
+| Zod | Data validation |
+| HTML5 | Semantic page structure |
+| CSS3 | Styling and responsive layouts |
+| Git and GitHub | Version control and source-code hosting |
+| GitHub Pages | Hosting the published front-end application |
 
-   ```bash
-   npm install
-   ```
+## 🚀 Getting Started
 
-3. Start the development server:
+### Prerequisites
 
-   ```bash
-   npm run dev
-   ```
+Make sure the following tools are installed:
 
-## Project Status
+- Node.js — a version compatible with the project's Vite dependencies
+- npm
+- Git
 
-This project is under development as part of a frontend development course. The current version focuses on the homepage and the initial global design system.
+Check your installed versions:
 
-**Note:** The doctors shown are sample data for demonstration purposes, not verified real medical providers.
+```bash
+node --version
+npm --version
+git --version
+```
 
+### Installation
 
-## Performance & Clean Code (Optimization Task)
+**1. Clone the repository**
 
-### Changes implemented
+```bash
+git clone https://github.com/takkh19/MediBook.git
+```
 
-- Added `React.lazy()` and `Suspense` for route-level code splitting in `src/App.jsx`. The route component is downloaded when its route is needed, and a loading fallback is displayed while it loads.
-- Memoized the filtered doctors list with `useMemo()` in `src/hooks/useDoctors.js`, so filtering is recalculated only when the doctors list or debounced search query changes.
-- Wrapped `DoctorCard` with `React.memo()` and stabilized the doctor action handlers with `useCallback()`. The add/update/delete actions in `useDoctors` also use stable callbacks.
-- Kept doctor data/search logic in the existing `useDoctors` custom hook.
-- Added `loading="lazy"` and `decoding="async"` to the external illustrative image on the About page.
-- Replaced dashboard emoji icons and the mobile navigation glyphs with reusable inline SVG icons in `src/components/Icon/Icon.jsx`.
-- Converted the existing PNG asset to WebP.
+**2. Open the project directory**
 
-### Image size comparison
+```bash
+cd MediBook
+```
 
-| Asset | Before | After | Difference |
-|---|---:|---:|---:|
-| `src/assets/hero.png` → `src/assets/hero.webp` | 13,057 bytes (12.75 KiB) | 11,368 bytes (11.10 KiB) | 1,689 bytes smaller (~12.9%) |
+**3. Install dependencies**
 
-Note: `hero.png` was not referenced by the current UI before conversion, so this asset-size reduction does not change the page's current network transfer size. The About page's illustrative image is loaded from an external URL and is now lazy-loaded; it is not a local JPEG/PNG asset.
+```bash
+npm install
+```
 
-### Form validation status
+**4. Start the development server**
 
-The existing forms use Zod schema validation with `safeParse()`. React Hook Form is not yet integrated. To satisfy that additional requirement, install `react-hook-form` and refactor the form state/submit handling to use `useForm()` with the existing Zod schemas. Do not report this step as completed until it has been implemented and tested.
+```bash
+npm run dev
+```
 
-### Verification
+**5. Open the local application**
 
-- ESLint check: `node ./node_modules/eslint/bin/eslint.js src` — passed in the provided working environment.
-- Production build could not be verified in the provided ZIP environment because the installed Vite/Rolldown dependencies are missing a platform-specific native binding. After extracting the project, run `npm install` followed by `npm run build` to refresh dependencies and verify the production bundle.
+Vite will display the local development URL in the terminal. Open that URL in your browser.
+
+### Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Starts the development server |
+| `npm run build` | Creates a production build |
+| `npm run preview` | Previews the production build locally |
+| `npm run lint` | Runs ESLint to check code quality |
+
+## 📁 Project Structure
+
+```text
+MediBook/
+├── public/                 # Public static assets
+├── src/
+│   ├── assets/             # Images and other imported assets
+│   ├── components/         # Reusable UI components
+│   ├── hooks/              # Custom React hooks
+│   ├── Pages/              # Application pages
+│   ├── services/           # Data access and service logic
+│   ├── App.jsx             # Application routes and main layout
+│   ├── App.css             # Application styles
+│   └── main.jsx            # Application entry point
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── vite.config.js
+└── README.md
+```
+
+## 📱 Responsive Design
+
+The interface should be checked at the following viewport categories:
+
+- **Mobile:** approximately 375–430 px wide
+- **Tablet:** approximately 768–1024 px wide
+- **Desktop:** 1280 px wide and above
+
+Responsive checks should cover navigation, doctor cards, search controls, forms, buttons, images, and page spacing.
+
+## 🌐 Cross-Browser Compatibility
+
+The application should be tested in the following browsers:
+
+- Google Chrome
+- Mozilla Firefox
+- Microsoft Edge
+
+The testing process should verify that the layout, navigation, doctor search, supported forms, and interactive components behave consistently.
+
+Responsive testing can be performed with Chrome DevTools Device Mode.
+
+Record the actual test results before submitting the project.
+
+## 🧹 Code Quality and Repository Hygiene
+
+The project uses ESLint to identify potential code-quality issues.
+
+Run the following checks before publishing changes:
+
+```bash
+npm run lint
+npm run build
+```
+
+The repository should exclude generated dependencies, build output, local environment files, and other machine-specific files through `.gitignore`.
+
+## 🔒 Environment Variables and Security
+
+Never commit secrets, credentials, API keys, or private environment configuration to a public repository.
+
+If environment variables are needed for local development, keep them in a local `.env` file and exclude that file from Git.
+
+## 📦 Deployment
+
+MediBook is published through GitHub Pages.
+
+After updating the source code, verify that the production build succeeds and that the published website loads correctly.
+
+**Live application:** https://takkh19.github.io/MediBook/
+
+## 🎯 Project Goals
+
+This project demonstrates practical front-end development skills, including:
+
+- Building a modular React application
+- Creating reusable UI components
+- Managing routes and application state
+- Implementing search and validation
+- Improving rendering performance
+- Handling loading and error states
+- Maintaining responsive layouts
+- Using Git and GitHub for version control
+- Documenting installation, development, and testing procedures
+
+## ⚠️ Disclaimer
+
+MediBook is an educational front-end project. The sample data and demonstration workflows are not a substitute for a verified healthcare service. Do not use the application to make medical decisions or assume that a real appointment has been booked.
+
+## 👩‍💻 Author
+
+**Tako Khatridze**
+
+GitHub: https://github.com/takkh19

@@ -169,3 +169,8 @@
 .nav-auth-button:hover {
   color: #2563eb;
 }
+.doctors-counter {
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}

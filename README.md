@@ -1,56 +1,99 @@
 # MediBook 🏥
 
-### Medical Clinic Appointment Management Platform
+### სამედიცინო კლინიკის ვიზიტების მართვის პლატფორმა
 
-MediBook is a responsive front-end web application designed to simplify the process of discovering medical specialists and managing appointment-related tasks.
+**MediBook** არის React-ზე შექმნილი რესფონსივი ვებაპლიკაცია, რომელიც პაციენტებს ეხმარება ექიმების მოძიებაში, სპეციალისტების შესახებ ინფორმაციის მიღებასა და სამედიცინო ვიზიტების დაგეგმვაში.
 
-The project provides a user-friendly interface for exploring doctors, searching by name or specialty, and navigating medical appointment information. It was developed as part of a front-end development project, with a focus on reusable React components, responsive design, accessibility, and code maintainability.
+პროექტი წარმოადგენს **სამედიცინო ჰაბის სასწავლო დემო ვერსიას** და შექმნილია Front-End დეველოპმენტის პრაქტიკული დავალების ფარგლებში.
 
-**Live Demo:** https://takkh19.github.io/MediBook/  
-**GitHub Repository:** https://github.com/takkh19/MediBook
+პროექტის მთავარი მიზანია მომხმარებლისთვის მარტივი, გასაგები და მოსახერხებელი ინტერფეისის შექმნა, რომელიც სხვადასხვა მოწყობილობასა და ბრაუზერში გამართულად მუშაობს.
+
+**🌐 ვებგვერდი:** https://takkh19.github.io/MediBook/
+
+**💻 GitHub რეპოზიტორია:** https://github.com/takkh19/MediBook
 
 ---
 
-## ✨ Features
+## ✨ ძირითადი ფუნქციონალი
 
-- **Doctor Directory** — Browse sample medical specialists and their information.
-- **Search and Filtering** — Find doctors by name or specialty.
-- **Responsive Interface** — Layout designed to adapt to different screen sizes.
-- **Reusable Components** — Shared React components for a consistent interface.
-- **Client-Side Routing** — Navigate between application pages using React Router.
-- **Form Validation** — Validate supported form data using Zod.
-- **Loading and Error Handling** — Provide feedback during loading and recover from supported runtime errors.
-- **Demo Data Fallback** — Display local demonstration data when the external doctor data source is unavailable.
-- **Performance Improvements** — Apply component memoization and lazy loading where appropriate.
-- **Accessible UI** — Use semantic HTML and visible keyboard-focus indicators.
+### 👨‍⚕️ ექიმების კატალოგი
 
-> **Note:** This is a front-end demonstration project. Sample doctor information is not verified medical-provider data. Demonstration functionality should not be interpreted as a production medical booking service.
+- ექიმების სიის დათვალიერება.
+- ექიმების შესახებ ძირითადი ინფორმაციის ნახვა.
+- ექიმების ძიება სახელით ან სპეციალობით.
+- მონაცემების ჩატვირთვისა და შეცდომების შესაბამისი შეტყობინებები.
+- დემო მონაცემების გამოყენება, თუ გარე მონაცემთა წყარო მიუწვდომელია.
 
-## 🛠️ Technology Stack
+### 🔐 ავტორიზაცია და რეგისტრაცია
 
-| Technology | Purpose |
+- ახალი მომხმარებლის რეგისტრაცია.
+- მომხმარებლის ანგარიშში შესვლა.
+- ანგარიშიდან გამოსვლა.
+- ფორმების ვალიდაცია.
+- მომხმარებლის სესიის დემო მართვა ბრაუზერის Local Storage-ის გამოყენებით.
+
+### 📅 ვიზიტის დაგეგმვა
+
+- სასურველი ექიმის არჩევა.
+- ვიზიტის თარიღისა და დროის მითითება.
+- თავისუფალი დროის სლოტების ჩვენება.
+- უკვე დაჯავშნილი დროის ხელახალი არჩევის შეზღუდვა.
+- წარსულ თარიღებზე ვიზიტის დაგეგმვის შეზღუდვა.
+- წარმატებული დაჯავშნის შემდეგ დამადასტურებელი შეტყობინების ჩვენება.
+- ჯავშნების დემო მონაცემების შენახვა Local Storage-ში.
+
+### 📋 ჩემი ვიზიტები
+
+- ავტორიზებული მომხმარებლის ვიზიტების ისტორიის ნახვა.
+- დაჯავშნილი ექიმის, პაციენტის, თარიღისა და დროის ჩვენება.
+- მომხმარებლის ვიზიტების ერთმანეთისგან გამიჯვნა დემო მონაცემებში.
+- მონაცემების შენარჩუნება გვერდის განახლების შემდეგ.
+
+### 🎨 ინტერფეისი და გამოყენებადობა
+
+- სხვადასხვა ზომის ეკრანზე ადაპტირებული დიზაინი.
+- მობილური ნავიგაცია.
+- მრავალჯერადი გამოყენების React კომპონენტები.
+- React Router-ით გვერდებს შორის ნავიგაცია.
+- სემანტიკური HTML ელემენტები.
+- კლავიატურით ნავიგაციისა და ფოკუსის ვიზუალური ინდიკატორების მხარდაჭერა.
+- კომპონენტების Lazy Loading და ოპტიმიზაცია საჭიროების მიხედვით.
+
+> **შენიშვნა:** MediBook არის სასწავლო Front-End პროექტი. ვიზიტების დაჯავშნა სიმულაციურია და რეალურ სამედიცინო დაწესებულებაში ჯავშანს არ ქმნის.
+
+---
+
+## 🛠️ გამოყენებული ტექნოლოგიები
+
+| ტექნოლოგია | დანიშნულება |
 |---|---|
-| React | Building the user interface |
-| JavaScript (ES Modules) | Application logic |
-| Vite | Development server and production build |
-| React Router | Client-side navigation |
-| Zod | Data validation |
-| HTML5 | Semantic page structure |
-| CSS3 | Styling and responsive layouts |
-| Git and GitHub | Version control and source-code hosting |
-| GitHub Pages | Hosting the published front-end application |
+| React | მომხმარებლის ინტერფეისის შექმნა |
+| JavaScript (ES Modules) | აპლიკაციის ლოგიკა |
+| Vite | დეველოპმენტის სერვერი და პროექტის აწყობა |
+| React Router | გვერდებს შორის ნავიგაცია |
+| Zod | ფორმებისა და მონაცემების ვალიდაცია |
+| HTML5 | გვერდების სემანტიკური სტრუქტურა |
+| CSS3 | დიზაინი და რესფონსივი განლაგება |
+| Local Storage | მომხმარებლისა და ჯავშნების დემო მონაცემების შენახვა |
+| ESLint | კოდის ხარისხის შემოწმება |
+| Git და GitHub | ვერსიების კონტროლი და კოდის განთავსება |
+| GitHub Pages | ვებაპლიკაციის გამოქვეყნება |
 
-## 🚀 Getting Started
+პროექტი დაწერილია **JavaScript-ზე** და არა TypeScript-ზე. გამოყენებული ტექნოლოგიების ჩამონათვალი შეესაბამება პროექტის რეალურ ტექნოლოგიურ სტეკს.
 
-### Prerequisites
+---
 
-Make sure the following tools are installed:
+## 🚀 პროექტის ლოკალურად გაშვება
 
-- Node.js — a version compatible with the project's Vite dependencies
-- npm
-- Git
+### წინაპირობები
 
-Check your installed versions:
+პროექტის გასაშვებად კომპიუტერზე დაინსტალირებული უნდა იყოს:
+
+- Node.js — პროექტის Vite ვერსიასთან თავსებადი ვერსია.
+- npm — პაკეტების მენეჯერი.
+- Git — რეპოზიტორიის ჩამოსატვირთად.
+
+დაინსტალირებული ვერსიების შემოწმება:
 
 ```bash
 node --version
@@ -58,59 +101,66 @@ npm --version
 git --version
 ```
 
-### Installation
+### ინსტალაციის ნაბიჯები
 
-**1. Clone the repository**
+**1. GitHub რეპოზიტორიის კლონირება**
 
 ```bash
 git clone https://github.com/takkh19/MediBook.git
 ```
 
-**2. Open the project directory**
+**2. პროექტის საქაღალდეში გადასვლა**
 
 ```bash
 cd MediBook
 ```
 
-**3. Install dependencies**
+**3. საჭირო პაკეტების ინსტალაცია**
 
 ```bash
 npm install
 ```
 
-**4. Start the development server**
+**4. დეველოპმენტის სერვერის გაშვება**
 
 ```bash
 npm run dev
 ```
 
-**5. Open the local application**
+**5. აპლიკაციის გახსნა**
 
-Vite will display the local development URL in the terminal. Open that URL in your browser.
+ტერმინალში გამოჩნდება ლოკალური მისამართი, მაგალითად:
 
-### Available Scripts
+`http://localhost:5173/MediBook/`
 
-| Command | Description |
+გახსენით ტერმინალში მითითებული მისამართი ბრაუზერში.
+
+### ხელმისაწვდომი ბრძანებები
+
+| ბრძანება | აღწერა |
 |---|---|
-| `npm run dev` | Starts the development server |
-| `npm run build` | Creates a production build |
-| `npm run preview` | Previews the production build locally |
-| `npm run lint` | Runs ESLint to check code quality |
+| `npm run dev` | დეველოპმენტის სერვერის გაშვება |
+| `npm run build` | პროექტის Production ვერსიის აწყობა |
+| `npm run preview` | აწყობილი ვერსიის ლოკალურად შემოწმება |
+| `npm run lint` | კოდის შემოწმება ESLint-ით |
 
-## 📁 Project Structure
+---
+
+## 📁 პროექტის სტრუქტურა
 
 ```text
 MediBook/
-├── public/                 # Public static assets
+├── public/                 # საჯარო სტატიკური ფაილები
 ├── src/
-│   ├── assets/             # Images and other imported assets
-│   ├── components/         # Reusable UI components
-│   ├── hooks/              # Custom React hooks
-│   ├── Pages/              # Application pages
-│   ├── services/           # Data access and service logic
-│   ├── App.jsx             # Application routes and main layout
-│   ├── App.css             # Application styles
-│   └── main.jsx            # Application entry point
+│   ├── assets/             # სურათები და სხვა რესურსები
+│   ├── components/         # მრავალჯერადი გამოყენების კომპონენტები
+│   ├── hooks/              # React-ის საკუთარი ჰუკები
+│   ├── Pages/              # აპლიკაციის გვერდები
+│   ├── services/           # მონაცემებთან მუშაობის სერვისები
+│   ├── utils/              # დამხმარე ფუნქციები
+│   ├── App.jsx             # მარშრუტები და აპლიკაციის ძირითადი სტრუქტურა
+│   ├── App.css             # ძირითადი სტილები
+│   └── main.jsx            # აპლიკაციის საწყისი ფაილი
 ├── .gitignore
 ├── eslint.config.js
 ├── index.html
@@ -120,77 +170,183 @@ MediBook/
 └── README.md
 ```
 
-## 📱 Responsive Design
+---
 
-The interface should be checked at the following viewport categories:
+## 📱 რესფონსივი დიზაინი
 
-- **Mobile:** approximately 375–430 px wide
-- **Tablet:** approximately 768–1024 px wide
-- **Desktop:** 1280 px wide and above
+MediBook-ის ინტერფეისი შექმნილია სხვადასხვა ზომის ეკრანზე გამოსაყენებლად.
 
-Responsive checks should cover navigation, doctor cards, search controls, forms, buttons, images, and page spacing.
+ტესტირებისთვის გათვალისწინებულია შემდეგი ეკრანის ზომები:
 
-## 🌐 Cross-Browser Compatibility
+| მოწყობილობა | ეკრანის სიგანე |
+|---|---|
+| მობილური ტელეფონი | 375–430 px |
+| პლანშეტი | 768–1024 px |
+| კომპიუტერი | 1280 px და მეტი |
 
-The application should be tested in the following browsers:
+რესფონსივი ტესტირებისას მოწმდება:
 
-- Google Chrome
-- Mozilla Firefox
-- Microsoft Edge
+- ნავიგაციის მენიუ.
+- ექიმების ბარათები.
+- ძიების ველი.
+- ავტორიზაციისა და რეგისტრაციის ფორმები.
+- ვიზიტის დაჯავშნის ფორმა.
+- თარიღისა და დროის არჩევის ველები.
+- ღილაკების განლაგება.
+- ტექსტების წაკითხვადობა.
+- გვერდის ჰორიზონტალური გადაცდენის არარსებობა.
 
-The testing process should verify that the layout, navigation, doctor search, supported forms, and interactive components behave consistently.
+ტესტირება შესაძლებელია **Google Chrome DevTools-ის Device Mode** ფუნქციით.
 
-Responsive testing can be performed with Chrome DevTools Device Mode.
+---
 
-Record the actual test results before submitting the project.
+## 🌐 კროს-ბრაუზერული ტესტირება
 
-## 🧹 Code Quality and Repository Hygiene
+პროექტის ერთ-ერთი მნიშვნელოვანი მოთხოვნაა აპლიკაციის გამართული მუშაობა მინიმუმ ორ განსხვავებულ ბრაუზერში.
 
-The project uses ESLint to identify potential code-quality issues.
+ტესტირებისთვის გამოიყენება:
 
-Run the following checks before publishing changes:
+- Google Chrome.
+- Microsoft Edge ან Mozilla Firefox.
+
+### ტესტირების სცენარები
+
+| შესამოწმებელი ფუნქცია | მოსალოდნელი შედეგი |
+|---|---|
+| მთავარი გვერდის გახსნა | გვერდი იტვირთება შეცდომის გარეშე |
+| გვერდებს შორის ნავიგაცია | ბმულები სწორ გვერდებზე გადადის |
+| ექიმების ძიება | სია იფილტრება საძიებო ტექსტის მიხედვით |
+| რეგისტრაცია | ფორმა ამოწმებს შეყვანილ მონაცემებს |
+| ავტორიზაცია | მომხმარებელი შედის ანგარიშში |
+| ვიზიტის დაგეგმვა | შესაძლებელია თავისუფალი დროის არჩევა |
+| დაკავებული დრო | უკვე დაჯავშნილი დრო ხელახლა არ ჩანს |
+| ჩემი ვიზიტები | მომხმარებელი ხედავს საკუთარ შენახულ ჯავშნებს |
+| მობილური ნავიგაცია | მენიუ იხსნება და იხურება გამართულად |
+| რესფონსივი დიზაინი | ელემენტები ეკრანის ზომას ერგება |
+
+### ტესტირების შედეგები
+
+შედეგები შეივსება ფაქტობრივი შემოწმების შემდეგ:
+
+| ტესტირება | შედეგი |
+|---|---|
+| Google Chrome | წარმატებით გაიარა |
+| Microsoft Edge / Mozilla Firefox | წარმატებით გაიარა |
+| მობილური ეკრანი | წარმატებით გაიარა |
+| პლანშეტის ეკრანი | წარმატებით გაიარა |
+
+---
+
+## 🧹 კოდის ხარისხი და რეპოზიტორიის სისუფთავე
+
+პროექტში გამოყენებულია ESLint, რომელიც ეხმარება დეველოპერს კოდის ხარისხის შენარჩუნებაში.
+
+საბოლოო შემოწმების ბრძანებები:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-The repository should exclude generated dependencies, build output, local environment files, and other machine-specific files through `.gitignore`.
+კოდის გამოქვეყნებამდე მოწმდება:
 
-## 🔒 Environment Variables and Security
+- გამოუყენებელი იმპორტების არარსებობა.
+- ზედმეტი `console.log` ჩანაწერების მოცილება.
+- კომპონენტების სწორი იმპორტები.
+- აპლიკაციის წარმატებული აწყობა.
+- `.gitignore` ფაილის გამართული კონფიგურაცია.
 
-Never commit secrets, credentials, API keys, or private environment configuration to a public repository.
+### .gitignore
 
-If environment variables are needed for local development, keep them in a local `.env` file and exclude that file from Git.
+რეპოზიტორიაში არ უნდა აიტვირთოს:
 
-## 📦 Deployment
+- `node_modules/` — დაინსტალირებული პაკეტები.
+- `dist/` — გენერირებული Build ფაილები.
+- `.env` — ლოკალური გარემოს კონფიგურაცია.
+- `.env.*` — სხვა ლოკალური გარემოს ფაილები, გარდა სპეციალურად საჯარო მაგალითებისა.
 
-MediBook is published through GitHub Pages.
+---
 
-After updating the source code, verify that the production build succeeds and that the published website loads correctly.
+## 🔒 მონაცემთა შენახვა და უსაფრთხოება
 
-**Live application:** https://takkh19.github.io/MediBook/
+MediBook-ის დემო ვერსია იყენებს ბრაუზერის **Local Storage** მექანიზმს.
 
-## 🎯 Project Goals
+მისი საშუალებით ინახება:
 
-This project demonstrates practical front-end development skills, including:
+- მომხმარებლის დემო ანგარიშის ინფორმაცია.
+- ავტორიზებული მომხმარებლის მდგომარეობა.
+- დაჯავშნილი ვიზიტები.
+- დაკავებული დროის სლოტები.
 
-- Building a modular React application
-- Creating reusable UI components
-- Managing routes and application state
-- Implementing search and validation
-- Improving rendering performance
-- Handling loading and error states
-- Maintaining responsive layouts
-- Using Git and GitHub for version control
-- Documenting installation, development, and testing procedures
+**მნიშვნელოვანი შეზღუდვები:**
 
-## ⚠️ Disclaimer
+- პროექტს არ აქვს სრულფასოვანი Backend და მონაცემთა ბაზა.
+- Local Storage-ში არსებული ინფორმაცია ინახება კონკრეტულ ბრაუზერში.
+- სხვადასხვა ბრაუზერში შენახული მონაცემები ავტომატურად არ სინქრონიზდება.
+- დემო ავტორიზაცია არ წარმოადგენს Production დონის უსაფრთხოების სისტემას.
+- დემო რეგისტრაციისთვის არ უნდა გამოიყენოთ რეალური ანგარიშების პაროლები ან კონფიდენციალური სამედიცინო მონაცემები.
 
-MediBook is an educational front-end project. The sample data and demonstration workflows are not a substitute for a verified healthcare service. Do not use the application to make medical decisions or assume that a real appointment has been booked.
+მომავალში სისტემის განვითარება შესაძლებელია უსაფრთხო სერვერული ავტორიზაციის, REST API-ისა და მონაცემთა ბაზის დამატებით.
 
-## 👩‍💻 Author
+---
 
-**Tako Khatridze**
+## 📦 GitHub-ზე განთავსება
+
+პროექტის საწყისი კოდი განთავსებულია საჯარო GitHub რეპოზიტორიაში:
+
+https://github.com/takkh19/MediBook
+
+ვებაპლიკაციის დემო ვერსია გამოქვეყნებულია GitHub Pages-ის საშუალებით:
+
+https://takkh19.github.io/MediBook/
+
+კოდში ცვლილებების შეტანის შემდეგ საჭიროა:
+
+1. კოდის ხარისხის შემოწმება.
+2. Production Build-ის წარმატებით შექმნა.
+3. ცვლილებების Git Commit-ით შენახვა.
+4. GitHub-ზე ატვირთვა.
+5. გამოქვეყნებული ვებგვერდის ხელახალი შემოწმება.
+
+---
+
+## 🎯 პროექტის მიზნები
+
+MediBook-ის შექმნის პროცესში გამოყენებულია Front-End დეველოპმენტის ძირითადი პრაქტიკული უნარები:
+
+- React აპლიკაციის არქიტექტურის შექმნა.
+- მრავალჯერადი გამოყენების კომპონენტების განვითარება.
+- React Hooks-ის გამოყენება.
+- Client-Side Routing.
+- ფორმების ვალიდაცია.
+- მომხმარებლის მდგომარეობის მართვა.
+- Local Storage-თან მუშაობა.
+- მონაცემების ძიება და ფილტრაცია.
+- რესფონსივი დიზაინის შექმნა.
+- კროს-ბრაუზერული ტესტირება.
+- Git-ისა და GitHub-ის გამოყენება.
+- ტექნიკური დოკუმენტაციის მომზადება.
+
+---
+
+## ⚠️ პასუხისმგებლობის შეზღუდვა
+
+MediBook წარმოადგენს საგანმანათლებლო პროექტს და არ არის რეალური სამედიცინო მომსახურების პლატფორმა.
+
+პროექტში წარმოდგენილი ექიმების ინფორმაცია და ვიზიტების დაჯავშნის ფუნქციონალი განკუთვნილია მხოლოდ დემონსტრაციისთვის.
+
+აპლიკაცია არ უნდა გამოიყენოთ რეალური სამედიცინო გადაწყვეტილებების მისაღებად ან სამედიცინო ვიზიტების დასადასტურებლად.
+
+---
+
+## 👩‍💻 ავტორი
+
+**თაკო ხატრიძე**
 
 GitHub: https://github.com/takkh19
+
+**პროექტი:** MediBook
+
+**მიმართულება:** Front-End Development
+
+**პროექტის ტიპი:** სასწავლო სამედიცინო ჰაბი

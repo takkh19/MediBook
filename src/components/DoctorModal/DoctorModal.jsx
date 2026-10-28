@@ -153,7 +153,7 @@ function DoctorModal({ isOpen, onClose, onSave, doctorToEdit }) {
             onChange={(event) => setExperience(event.target.value)}
             aria-invalid={Boolean(errors.experience)}
             aria-describedby={errors.experience ? "doctor-experience-error" : undefined}
-            placeholder="მაგ. 5 წლის გამოცდილება"
+            placeholder="მაგ. 5 წლიანი გამოცდილება"
           />
           {errors.experience && (
             <p className="doctor-form-error" id="doctor-experience-error">{errors.experience}</p>

@@ -1,14 +1,25 @@
 
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { getCurrentUser, logoutUser } from "../../utils/auth";
 import Icon from "../Icon/Icon.jsx";
 import "./SiteHeader.css";
 
 function SiteHeader() {
+    const navigate = useNavigate();
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState(getCurrentUser);
 
     function closeMenu() {
         setIsMenuOpen(false);
+    }
+
+    function handleLogout() {
+        logoutUser();
+        setCurrentUser(null);
+        closeMenu();
+        navigate("/auth");
     }
 
     return (
@@ -19,14 +30,16 @@ function SiteHeader() {
                 aria-label="MediBook მთავარი გვერდი"
                 onClick={closeMenu}
             >
-                <span className="brand-icon" aria-hidden="true">+</span>
+                <span className="brand-icon" aria-hidden="true">
+                    +
+                </span>
                 MediBook
             </Link>
 
             <button
                 type="button"
                 className="mobile-menu-toggle"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => setIsMenuOpen((open) => !open)}
                 aria-label={isMenuOpen ? "მენიუს დახურვა" : "მენიუს გახსნა"}
                 aria-expanded={isMenuOpen}
                 aria-controls="main-navigation"
@@ -42,15 +55,31 @@ function SiteHeader() {
                 <NavLink to="/" end onClick={closeMenu}>
                     მთავარი
                 </NavLink>
+
                 <NavLink to="/doctors" onClick={closeMenu}>
                     ექიმები
                 </NavLink>
+
                 <NavLink to="/appointments" onClick={closeMenu}>
                     ვიზიტის დაგეგმვა
                 </NavLink>
+
                 <NavLink to="/about" onClick={closeMenu}>
                     ჩვენ შესახებ
                 </NavLink>
+                {currentUser ? (
+                    <button
+                        type="button"
+                        className="nav-auth-button"
+                        onClick={handleLogout}
+                    >
+                        გამოსვლა
+                    </button>
+                ) : (
+                    <NavLink to="/auth" onClick={closeMenu}>
+                        შესვლა / რეგისტრაცია
+                    </NavLink>
+                )}
             </nav>
 
             <Link
@@ -60,6 +89,7 @@ function SiteHeader() {
             >
                 მთავარ გვერდზე დაბრუნება
             </Link>
+
         </header>
     );
 }

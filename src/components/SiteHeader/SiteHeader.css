@@ -157,3 +157,15 @@
     white-space: normal;
   }
 }
+.nav-auth-button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-auth-button:hover {
+  color: #2563eb;
+}

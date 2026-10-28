@@ -4,12 +4,11 @@ import { useDoctors } from "../hooks/useDoctors";
 import DoctorCard from "../components/DoctorCard/DoctorCard";
 import DoctorModal from "../components/DoctorModal/DoctorModal";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
-
-// Temporary demo role. Replace with authenticated user role later.
-const DEMO_ROLE = "patient";
+import { getCurrentUser } from "../utils/auth";
 
 function Doctors() {
-  const isAdmin = DEMO_ROLE === "admin";
+  const currentUser = getCurrentUser();
+const isAdmin = currentUser?.role === "admin";
 
   const {
     doctors,

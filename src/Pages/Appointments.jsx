@@ -3,15 +3,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useState, useRef } from "react";
 import { z } from "zod";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
+import { useDoctors } from "../hooks/useDoctors";
 
-const doctors = [
-  { id: "1", name: "ნინო ბერიძე", specialty: "კარდიოლოგი" },
-  { id: "2", name: "გიორგი მაისურაძე", specialty: "დერმატოლოგი" },
-  { id: "3", name: "ანა ლომიძე", specialty: "ნევროლოგი" },
-  { id: "4", name: "დავით კაპანაძე", specialty: "ოჯახის ექიმი" },
-  { id: "5", name: "მარიამ ჯაფარიძე", specialty: "პედიატრი" },
-  { id: "6", name: "ლევან გელაშვილი", specialty: "ორთოპედი" },
-];
 const appointmentSchema = z.object({
   doctorId: z.string().min(1, "გთხოვთ, აირჩიოთ ექიმი."),
   patientName: z.string().trim().min(3, "შეიყვანეთ სახელი და გვარი."),
@@ -20,6 +13,7 @@ const appointmentSchema = z.object({
   time: z.string().min(1, "აირჩიეთ ვიზიტის დრო."),
 });
 function Appointment() {
+  const { doctors } = useDoctors();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchParams] = useSearchParams();
   const [selectedDoctorId, setSelectedDoctorId] = useState(
@@ -34,8 +28,8 @@ function Appointment() {
   const [formError, setFormError] = useState("");
   const submissionLock = useRef(false);
   const selectedDoctor = doctors.find(
-    (doctor) => doctor.id === selectedDoctorId
-  );
+  (doctor) => String(doctor.id) === selectedDoctorId
+);
 
 
   async function handleSubmit(event) {
@@ -65,7 +59,10 @@ function Appointment() {
       );
       return;
     }
-
+    if (!selectedDoctor) {
+  setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
+  return;
+}
     submissionLock.current = true;
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 800));

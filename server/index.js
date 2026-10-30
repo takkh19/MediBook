@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import db from "./database.js";
 import authRouter from "./auth.js";
 import { requireAuth, requireRole } from "./middleware/auth.js";
+import appointmentsRouter from "./routes/appointments.js";
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.get(
   }
 );
 app.use("/api/doctors", doctorsRouter);
+app.use("/api/appointments", appointmentsRouter);
 
 app.listen(PORT, () => {
   console.log(`MediBook API running at http://localhost:${PORT}`);

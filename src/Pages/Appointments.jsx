@@ -159,6 +159,8 @@ function Appointment() {
         },
         body: JSON.stringify({
           doctorId: Number(selectedDoctorId),
+          patientName: result.data.patientName,
+          email: result.data.email,
           date,
           time,
         }),

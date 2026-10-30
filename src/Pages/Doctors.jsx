@@ -67,6 +67,7 @@ function Doctors() {
         setActionError(
           error.message || "ექიმის შენახვა ვერ მოხერხდა."
         );
+        throw error;
       } finally {
         setIsSaving(false);
       }

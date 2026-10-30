@@ -8,6 +8,7 @@ import db from "./database.js";
 import authRouter from "./auth.js";
 import { requireAuth, requireRole } from "./middleware/auth.js";
 import appointmentsRouter from "./routes/appointments.js";
+import adminRouter from "./routes/admin.js";
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.get(
     res.json({ message: "Doctor access granted" });
   }
 );
+app.use("/api/admin", adminRouter);
 app.use("/api/doctors", doctorsRouter);
 app.use("/api/appointments", appointmentsRouter);
 

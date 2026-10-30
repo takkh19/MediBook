@@ -8,6 +8,8 @@ const router = Router();
 
 const bookingSchema = z.object({
   doctorId: z.number().int().positive(),
+  patientName: z.string().trim().min(3).max(120),
+  email: z.email().max(254),
   date: z.iso.date(),
   time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
 });
@@ -57,7 +59,7 @@ router.post("/", requireAuth, requireRole("patient"), (req, res) => {
     return res.status(400).json({ message: "Invalid booking data" });
   }
 
-  const { doctorId, date, time } = result.data;
+  const { doctorId, patientName, email, date, time } = result.data;
 
   if (
     !workingHours.includes(time) ||
@@ -78,12 +80,14 @@ router.post("/", requireAuth, requireRole("patient"), (req, res) => {
   INSERT INTO appointments (
     patient_id,
     doctor_id,
+    patient_name,
+    patient_email,
     date,
     time,
     status
   )
-  VALUES (?, ?, ?, ?, ?)
-`).run(req.user.id, doctorId, date, time, "confirmed");
+  VALUES (?, ?, ?, ?, ?, ?, ?)
+`).run(req.user.id, doctorId, patientName, email, date, time, "confirmed");
 
 
     return res.status(201).json({
@@ -119,7 +123,7 @@ router.get("/mine", requireAuth, (req, res) => {
     `).all(req.user.id);
   } else if (req.user.role === "doctor") {
     appointments = db.prepare(`
-      SELECT a.*, u.name AS patient_name
+      SELECT a.*, COALESCE(NULLIF(TRIM(a.patient_name), ''), u.name) AS patient_name, COALESCE(NULLIF(TRIM(a.patient_email), ''), u.email) AS patient_email
       FROM appointments a
       JOIN doctors d ON d.id = a.doctor_id
       JOIN users u ON u.id = a.patient_id
@@ -128,7 +132,7 @@ router.get("/mine", requireAuth, (req, res) => {
     `).all(req.user.id);
   } else {
     appointments = db.prepare(`
-      SELECT a.*, d.name AS doctor_name, u.name AS patient_name
+      SELECT a.*, d.name AS doctor_name, COALESCE(NULLIF(TRIM(a.patient_name), ''), u.name) AS patient_name, COALESCE(NULLIF(TRIM(a.patient_email), ''), u.email) AS patient_email
       FROM appointments a
       JOIN doctors d ON d.id = a.doctor_id
       JOIN users u ON u.id = a.patient_id

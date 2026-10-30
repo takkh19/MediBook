@@ -45,6 +45,15 @@ db.exec(`
   WHERE status != 'cancelled';
 `);
 
+// Preserve existing appointments while adding booking-specific patient details.
+const appointmentColumns = db.prepare("PRAGMA table_info(appointments)").all();
+const appointmentColumnNames = new Set(appointmentColumns.map((column) => column.name));
+if (!appointmentColumnNames.has("patient_name")) {
+  db.exec("ALTER TABLE appointments ADD COLUMN patient_name TEXT");
+}
+if (!appointmentColumnNames.has("patient_email")) {
+  db.exec("ALTER TABLE appointments ADD COLUMN patient_email TEXT");
+}
 
 const demoDoctors = [
   {

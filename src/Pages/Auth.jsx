@@ -72,7 +72,7 @@ function Auth() {
             });
 
             saveCurrentUser(data.user, data.token);
-            navigate("/");
+            navigate(data.user.role === "admin" ? "/dashboard" : data.user.role === "doctor" ? "/doctor-dashboard" : "/", { replace: true });
         } catch (error) {
             if (error.message === "Failed to fetch") {
                 setError("სერვერთან დაკავშირება ვერ მოხერხდა.");

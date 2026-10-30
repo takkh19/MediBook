@@ -1,14 +1,16 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { getCurrentUser, getToken } from "./utils/auth";
 import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 import "./App.css";
-import AdminRoute from "./components/AdminRoute";
+import RoleRoute from "./components/RoleRoute";
 
 const Home = lazy(() => import("./Pages/Home.jsx"));
 const About = lazy(() => import("./Pages/About.jsx"));
 const Doctors = lazy(() => import("./Pages/Doctors.jsx"));
 const Appointments = lazy(() => import("./Pages/Appointments.jsx"));
 const Dashboard = lazy(() => import("./Dashboard.jsx"));
+const DoctorDashboard = lazy(() => import("./Pages/DoctorDashboard.jsx"));
 const Auth = lazy(() => import("./Pages/Auth"));
 const MyAppointments = lazy(() =>
   import("./Pages/MyAppointments")
@@ -22,26 +24,33 @@ function RouteLoading() {
   );
 }
 
+function RoleHome({children}) {
+ const user=getToken() && getCurrentUser();
+ if(user?.role === "admin") return <Navigate to="/dashboard" replace />;
+ if(user?.role === "doctor") return <Navigate to="/doctor-dashboard" replace />;
+ return children;
+}
 function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter basename="/MediBook/">
         <Suspense fallback={<RouteLoading />}>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<RoleHome><Home /></RoleHome>} />
             <Route path="/about" element={<About />} />
             <Route path="/doctors" element={<Doctors />} />
-            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/appointments" element={<RoleRoute roles={["patient"]}><Appointments /></RoleRoute>} />
             <Route
               path="/dashboard"
               element={
-                <AdminRoute>
+                <RoleRoute roles={["admin"]}>
                   <Dashboard />
-                </AdminRoute>
+                </RoleRoute>
               }
             />
+            <Route path="/doctor-dashboard" element={<RoleRoute roles={["doctor"]}><DoctorDashboard /></RoleRoute>} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/my-appointments" element={<MyAppointments />} />
+            <Route path="/my-appointments" element={<RoleRoute roles={["patient"]}><MyAppointments /></RoleRoute>} />
           </Routes>
         </Suspense>
       </BrowserRouter>

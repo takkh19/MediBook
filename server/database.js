@@ -124,5 +124,61 @@ const seedDoctors = db.transaction(() => {
 
 seedDoctors();
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS doctor_schedule (
+    doctor_id INTEGER NOT NULL,
+    weekday INTEGER NOT NULL CHECK (weekday BETWEEN 0 AND 6),
+    time TEXT NOT NULL,
+    PRIMARY KEY (doctor_id, weekday, time),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS doctor_schedule_settings (
+    doctor_id INTEGER PRIMARY KEY,
+    configured INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+  );
+`);
+
+// არსებული ექიმებისთვის საწყისი სამუშაო გრაფიკი.
+// 0 = კვირა, 1 = ორშაბათი, ... 6 = შაბათი.
+const defaultTimes = [
+  "10:00", "11:00", "12:00",
+  "14:00", "15:00", "16:00"
+];
+
+const initializeSchedules = db.transaction(() => {
+  const doctors = db.prepare("SELECT id FROM doctors").all();
+
+  const hasSettings = db.prepare(`
+    SELECT doctor_id FROM doctor_schedule_settings
+    WHERE doctor_id = ?
+  `);
+
+  const insertSettings = db.prepare(`
+    INSERT INTO doctor_schedule_settings (doctor_id)
+    VALUES (?)
+  `);
+
+  const insertSlot = db.prepare(`
+    INSERT OR IGNORE INTO doctor_schedule (doctor_id, weekday, time)
+    VALUES (?, ?, ?)
+  `);
+
+  for (const doctor of doctors) {
+    if (hasSettings.get(doctor.id)) continue;
+
+    insertSettings.run(doctor.id);
+
+    for (let weekday = 1; weekday <= 5; weekday++) {
+      for (const time of defaultTimes) {
+        insertSlot.run(doctor.id, weekday, time);
+      }
+    }
+  }
+});
+
+initializeSchedules();
+
 
 export default db;

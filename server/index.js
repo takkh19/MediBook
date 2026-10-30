@@ -9,6 +9,7 @@ import authRouter from "./auth.js";
 import { requireAuth, requireRole } from "./middleware/auth.js";
 import appointmentsRouter from "./routes/appointments.js";
 import adminRouter from "./routes/admin.js";
+import scheduleRouter from "./routes/schedule.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
 }));
+app.use("/api/schedule", scheduleRouter);
 
 app.use(express.json({ limit: "20kb" }));
 

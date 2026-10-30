@@ -28,7 +28,6 @@ function Appointment() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [isBookingServiceUnavailable] = useState(true);
   const [formError, setFormError] = useState("");
   const submissionLock = useRef(false);
   const selectedDoctor = doctors.find(
@@ -146,27 +145,9 @@ async function handleSubmit(event) {
       <SiteHeader />
 
       <main>
-        {isBookingServiceUnavailable && (
-          <div
-            role="alert"
-            style={{
-              padding: "14px 20px",
-              margin: "0 0 20px",
-              backgroundColor: "#fff3cd",
-              color: "#664d03",
-              border: "1px solid #ffecb5",
-              borderRadius: "8px",
-              textAlign: "center",
-            }}
-
-          >
-            <strong>⚠️ ონლაინ დაჯავშნის სერვისი დროებით მიუწვდომელია.</strong>
-            <p style={{ margin: "6px 0 0" }}>
-              ვიზიტის დასაგეგმად დაგვიკავშირდით:{" "}
-              <a href="tel:5555555555">555 55 55 55</a>
-            </p>
-          </div>
-        )}
+        <div role="note" style={{ padding: "12px 18px", marginBottom: "20px", backgroundColor: "#eef6ff", borderRadius: "8px" }}>
+          MediBook დემო-ვერსიაა. ჯავშნები ინახება მხოლოდ ამ ბრაუზერში და რეალურ კლინიკაში არ იგზავნება.
+        </div>
         <section className="doctors-section" aria-labelledby="appointment-title">
           <div className="section-heading">
             <div>

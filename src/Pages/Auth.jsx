@@ -12,6 +12,7 @@ function Auth() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
 
     function handleSubmit(event) {
@@ -21,14 +22,24 @@ function Auth() {
         const users = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
         const normalizedEmail = email.trim().toLowerCase();
 
-        if (!normalizedEmail.includes("@") || password.length < 6) {
-            setError("შეიყვანე სწორი ელფოსტა და მინიმუმ 6-სიმბოლოიანი პაროლი.");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            setError("შეიყვანე სწორი ელფოსტა.");
             return;
         }
 
         if (isRegister) {
-            if (!name.trim()) {
-                setError("სახელი აუცილებელია.");
+            if (name.trim().length < 2) {
+                setError("სახელი უნდა შეიცავდეს მინიმუმ 2 სიმბოლოს.");
+                return;
+            }
+
+            if (!/^(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password)) {
+                setError("პაროლი უნდა შეიცავდეს მინიმუმ 8 სიმბოლოს, ერთ ციფრს და სპეციალურ სიმბოლოს.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                setError("პაროლები ერთმანეთს არ ემთხვევა.");
                 return;
             }
 
@@ -111,10 +122,23 @@ function Auth() {
                                 type="password"
                                 value={password}
                                 onChange={(event) => setPassword(event.target.value)}
-                                minLength={6}
+                                minLength={isRegister ? 8 : undefined}
                                 required
                             />
                         </label>
+
+                        {isRegister && (
+                            <label>
+                                გაიმეორე პაროლი
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(event) => setConfirmPassword(event.target.value)}
+                                    minLength={8}
+                                    required
+                                />
+                            </label>
+                        )}
 
                         {error && <p role="alert">{error}</p>}
 

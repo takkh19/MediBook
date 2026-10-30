@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useDoctorStore } from "./store/useDoctorStore";
 
 import Layout from "./components/Layout/Layout";
 import Header from "./components/Header/Header";
@@ -5,6 +7,18 @@ import StatCard from "./components/StatCard/StatCard";
 import "./Dashboard.css";
 
 function Dashboard() {
+    const doctors = useDoctorStore((state) => state.doctors);
+    const loadDoctors = useDoctorStore((state) => state.loadDoctors);
+    useEffect(() => { loadDoctors(); }, [loadDoctors]);
+    const readArray = (key) => {
+        try {
+            const value = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(value) ? value : [];
+        } catch { return []; }
+    };
+    const appointments = readArray("medibook-appointments");
+    const patients = readArray("medibook-users").filter((user) => user.role === "patient");
+    const upcoming = appointments.filter((appointment) => new Date(`${appointment.date}T${appointment.time}:00`) > new Date());
     return (
         <Layout>
             <Header />
@@ -24,29 +38,29 @@ function Dashboard() {
                     <div className="stats-grid">
                         <StatCard
                             title="ვიზიტი"
-                            value="128"
+                            value={appointments.length}
                             change="სულ ვიზიტები"
                             icon="calendar"
                         />
 
                         <StatCard
                             title="ექიმი"
-                            value="24"
+                            value={doctors.length}
                             change="რეგისტრირებული ექიმი"
                             icon="stethoscope"
                         />
 
                         <StatCard
                             title="პაციენტი"
-                            value="356"
+                            value={patients.length}
                             change="სულ პაციენტები"
                             icon="users"
                         />
 
                         <StatCard
                             title="მოლოდინში"
-                            value="18"
-                            change="დასადასტურებელი ვიზიტები"
+                            value={upcoming.length}
+                            change="მომავალი ვიზიტები"
                             icon="clock"
                         />
                     </div>
@@ -57,44 +71,20 @@ function Dashboard() {
                     <h2>უახლოესი ვიზიტები</h2>
 
                     <div className="appointments-list">
-                        <article className="appointment-row">
-                            <div className="appointment-patient">
-                                <strong>ნინო ბერიძე</strong>
-                                <span>კარდიოლოგია · დოქტორი გიორგი მაისურაძე</span>
-                            </div>
-                            <div className="appointment-details">
-                                <span>15 ოქტომბერი, 10:00</span>
-                                <span className="appointment-status confirmed">
-                                    დადასტურებული
-                                </span>
-                            </div>
-                        </article>
-
-                        <article className="appointment-row">
-                            <div className="appointment-patient">
-                                <strong>მარიამ კაპანაძე</strong>
-                                <span>თერაპია · დოქტორი ანა ლომიძე</span>
-                            </div>
-                            <div className="appointment-details">
-                                <span>15 ოქტომბერი, 11:30</span>
-                                <span className="appointment-status pending">
-                                    მოლოდინში
-                                </span>
-                            </div>
-                        </article>
-
-                        <article className="appointment-row">
-                            <div className="appointment-patient">
-                                <strong>დავით გელაშვილი</strong>
-                                <span>ნევროლოგია · დოქტორი ეკა ჯაფარიძე</span>
-                            </div>
-                            <div className="appointment-details">
-                                <span>15 ოქტომბერი, 14:00</span>
-                                <span className="appointment-status confirmed">
-                                    დადასტურებული
-                                </span>
-                            </div>
-                        </article>
+                        {upcoming.length === 0 ? (
+                            <p>მომავალი ვიზიტები ჯერ არ არის.</p>
+                        ) : upcoming.slice(0, 5).map((appointment) => (
+                            <article className="appointment-row" key={appointment.id}>
+                                <div className="appointment-patient">
+                                    <strong>{appointment.patientName}</strong>
+                                    <span>{appointment.doctorName}</span>
+                                </div>
+                                <div className="appointment-details">
+                                    <span>{appointment.date}, {appointment.time}</span>
+                                    <span className="appointment-status confirmed">დაჯავშნილი</span>
+                                </div>
+                            </article>
+                        ))}
                     </div>
                 </section>
 

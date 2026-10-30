@@ -45,4 +45,75 @@ db.exec(`
   WHERE status != 'cancelled';
 `);
 
+
+const demoDoctors = [
+  {
+    name: "გიორგი მაისურაძე",
+    specialty: "ნევროლოგი",
+    clinic: "მედიქლაბი",
+    experience: 12,
+  },
+  {
+    name: "მარიამ კაპანაძე",
+    specialty: "დერმატოლოგი",
+    clinic: "ავერსის კლინიკა",
+    experience: 7,
+  },
+  {
+    name: "ლევან ჯაფარიძე",
+    specialty: "ორთოპედი",
+    clinic: "მედიქლაბი",
+    experience: 15,
+  },
+  {
+    name: "თამარ გელაშვილი",
+    specialty: "პედიატრი",
+    clinic: "ევექსის კლინიკა",
+    experience: 10,
+  },
+  {
+    name: "ანა ჩხეიძე",
+    specialty: "ენდოკრინოლოგი",
+    clinic: "MediBook კლინიკა",
+    experience: 9,
+  },
+  {
+    name: "დავით აბაშიძე",
+    specialty: "კარდიოლოგი",
+    clinic: "MediBook კლინიკა",
+    experience: 14,
+  },
+];
+
+const findDoctor = db.prepare(`
+  SELECT id FROM doctors
+  WHERE name = ? AND specialty = ?
+`);
+
+const insertDoctor = db.prepare(`
+  INSERT INTO doctors (name, specialty, clinic, experience)
+  VALUES (?, ?, ?, ?)
+`);
+
+const seedDoctors = db.transaction(() => {
+  for (const doctor of demoDoctors) {
+    const exists = findDoctor.get(
+      doctor.name,
+      doctor.specialty
+    );
+
+    if (!exists) {
+      insertDoctor.run(
+        doctor.name,
+        doctor.specialty,
+        doctor.clinic,
+        doctor.experience
+      );
+    }
+  }
+});
+
+seedDoctors();
+
+
 export default db;

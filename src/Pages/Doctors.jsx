@@ -8,7 +8,7 @@ import { getCurrentUser } from "../utils/auth";
 
 function Doctors() {
   const currentUser = getCurrentUser();
-const isAdmin = currentUser?.role === "admin";
+  const isAdmin = currentUser?.role === "admin";
 
   const {
     doctors,
@@ -22,50 +22,90 @@ const isAdmin = currentUser?.role === "admin";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [doctorToEdit, setDoctorToEdit] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   const handleAddDoctor = useCallback(() => {
-    if (!isAdmin) return;
+    if (!isAdmin || isSaving) return;
+
+    setActionError("");
     setDoctorToEdit(null);
     setIsModalOpen(true);
-  }, [isAdmin]);
+  }, [isAdmin, isSaving]);
 
-  const handleEditDoctor = useCallback((doctor) => {
-    if (!isAdmin) return;
-    setDoctorToEdit(doctor);
-    setIsModalOpen(true);
-  }, [isAdmin]);
+  const handleEditDoctor = useCallback(
+    (doctor) => {
+      if (!isAdmin || isSaving) return;
 
-  const handleSaveDoctor = useCallback((doctorData) => {
-    if (!isAdmin) return;
+      setActionError("");
+      setDoctorToEdit(doctor);
+      setIsModalOpen(true);
+    },
+    [isAdmin, isSaving]
+  );
 
-    if (doctorToEdit) {
-      updateDoctor({
-        ...doctorData,
-        id: doctorToEdit.id,
-      });
-    } else {
-      addDoctor(doctorData);
-    }
+  const handleSaveDoctor = useCallback(
+    async (doctorData) => {
+      if (!isAdmin || isSaving) return;
 
-    setIsModalOpen(false);
-  }, [isAdmin, doctorToEdit, updateDoctor, addDoctor]);
+      setIsSaving(true);
+      setActionError("");
 
-  const handleDeleteDoctor = useCallback((doctor) => {
-    if (!isAdmin) return;
+      try {
+        if (doctorToEdit) {
+          await updateDoctor({
+            ...doctorData,
+            id: doctorToEdit.id,
+          });
+        } else {
+          await addDoctor(doctorData);
+        }
 
-    const confirmed = window.confirm(
-      `ნამდვილად გსურს ექიმის წაშლა: ${doctor.name}?`
-    );
+        setIsModalOpen(false);
+        setDoctorToEdit(null);
+      } catch (error) {
+        setActionError(
+          error.message || "ექიმის შენახვა ვერ მოხერხდა."
+        );
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [isAdmin, isSaving, doctorToEdit, updateDoctor, addDoctor]
+  );
 
-    if (confirmed) {
-      deleteDoctor(doctor.id);
-    }
-  }, [isAdmin, deleteDoctor]);
+  const handleDeleteDoctor = useCallback(
+    async (doctor) => {
+      if (!isAdmin || isSaving) return;
+
+      const confirmed = window.confirm(
+        `ნამდვილად გსურს ექიმის წაშლა: ${doctor.name}?`
+      );
+
+      if (!confirmed) return;
+
+      setIsSaving(true);
+      setActionError("");
+
+      try {
+        await deleteDoctor(doctor.id);
+      } catch (error) {
+        setActionError(
+          error.message || "ექიმის წაშლა ვერ მოხერხდა."
+        );
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [isAdmin, isSaving, deleteDoctor]
+  );
 
   const handleCloseModal = useCallback(() => {
+    if (isSaving) return;
+
     setIsModalOpen(false);
     setDoctorToEdit(null);
-  }, []);
+  }, [isSaving]);
 
   return (
     <div className="app">
@@ -92,10 +132,14 @@ const isAdmin = currentUser?.role === "admin";
           aria-labelledby="doctors-page-title"
         >
           <div className="hero-content">
-            <span className="eyebrow">ჩვენი სპეციალისტები</span>
+            <span className="eyebrow">
+              ჩვენი სპეციალისტები
+            </span>
+
             <h1 id="doctors-page-title">
               იპოვე შენთვის სასურველი ექიმი
             </h1>
+
             <p>
               გაეცანი სპეციალისტებს, შეარჩიე საჭირო მიმართულება
               და დაგეგმე ვიზიტი.
@@ -103,11 +147,17 @@ const isAdmin = currentUser?.role === "admin";
           </div>
 
           <aside className="hero-card">
-            <div className="medical-symbol" aria-hidden="true">
+            <div
+              className="medical-symbol"
+              aria-hidden="true"
+            >
               +
             </div>
+
             <p className="hero-card-label">MEDIBOOK</p>
+
             <h2>სწორი არჩევანი ჯანმრთელობისთვის</h2>
+
             <p>
               აირჩიე სპეციალისტი შენი საჭიროებების მიხედვით.
             </p>
@@ -118,9 +168,27 @@ const isAdmin = currentUser?.role === "admin";
           className="doctors-section"
           aria-labelledby="doctors-list-title"
         >
+          {actionError && (
+            <p
+              role="alert"
+              style={{ color: "#b42318" }}
+            >
+              {actionError}
+            </p>
+          )}
+
+          {isSaving && (
+            <p role="status">
+              მიმდინარეობს მონაცემების შენახვა...
+            </p>
+          )}
+
           <div className="section-heading">
             <div>
-              <h2 id="doctors-list-title">ექიმების სია</h2>
+              <h2 id="doctors-list-title">
+                ექიმების სია
+              </h2>
+
               <p>
                 აირჩიე სპეციალისტი და გააგრძელე ვიზიტის დაგეგმვა.
               </p>
@@ -131,6 +199,7 @@ const isAdmin = currentUser?.role === "admin";
                 type="button"
                 className="button"
                 onClick={handleAddDoctor}
+                disabled={isSaving}
               >
                 + ახალი ექიმის დამატება
               </button>
@@ -145,6 +214,7 @@ const isAdmin = currentUser?.role === "admin";
             <label htmlFor="doctor-search">
               ექიმის ძიება
             </label>
+
             <input
               id="doctor-search"
               type="search"
@@ -171,7 +241,10 @@ const isAdmin = currentUser?.role === "admin";
       </main>
 
       <footer className="site-footer">
-        <p>© 2026 MediBook. ყველა უფლება დაცულია.</p>
+        <p>
+          © 2026 MediBook. ყველა უფლება დაცულია.
+        </p>
+
         <a href="mailto:info@medibook.ge">
           დაგვიკავშირდით
         </a>

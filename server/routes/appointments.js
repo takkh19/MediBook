@@ -73,10 +73,18 @@ router.post("/", requireAuth, requireRole("patient"), (req, res) => {
   }
 
   try {
+
     const insert = db.prepare(`
-      INSERT INTO appointments (patient_id, doctor_id, date, time)
-      VALUES (?, ?, ?, ?)
-    `).run(req.user.id, doctorId, date, time);
+  INSERT INTO appointments (
+    patient_id,
+    doctor_id,
+    date,
+    time,
+    status
+  )
+  VALUES (?, ?, ?, ?, ?)
+`).run(req.user.id, doctorId, date, time, "confirmed");
+
 
     return res.status(201).json({
       id: insert.lastInsertRowid,

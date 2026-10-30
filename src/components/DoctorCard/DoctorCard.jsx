@@ -8,9 +8,11 @@ function DoctorCardComponent({
   onDelete,
   isAdmin = false,
 }) {
-  const experience = String(doctor.experience ?? "")
-    .replace(/წლის გამოცდილება/g, "წლიანი გამოცდილება");
+const rawExperience = String(doctor.experience ?? "").trim();
 
+const experience = rawExperience
+  ? `${rawExperience.replace(/\s*(?:წლის|წლიანი)\s+გამოცდილება/gi, "").trim()} წლიანი გამოცდილება`
+  : "გამოცდილება მითითებული არ არის";
   return (
     <article className="doctor-card">
       <div className="doctor-avatar" aria-hidden="true">

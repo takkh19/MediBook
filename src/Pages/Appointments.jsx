@@ -1,192 +1,237 @@
 
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import SiteHeader from "../components/SiteHeader/SiteHeader";
 import { useDoctors } from "../hooks/useDoctors";
-import { getAvailableSlots } from "../utils/appointmentSlots";
-import { getCurrentUser } from "../utils/auth";
+import { getCurrentUser, getToken } from "../utils/auth";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const appointmentSchema = z.object({
   doctorId: z.string().min(1, "გთხოვთ, აირჩიოთ ექიმი."),
   patientName: z.string().trim().min(3, "შეიყვანეთ სახელი და გვარი."),
-  email: z.string().trim().email("შეიყვანეთ სწორი ელფოსტა."),
+  email: z.email("შეიყვანეთ სწორი ელფოსტა."),
   date: z.string().min(1, "აირჩიეთ ვიზიტის თარიღი."),
   time: z.string().min(1, "აირჩიეთ ვიზიტის დრო."),
 });
+
 function Appointment() {
-  const currentUser = getCurrentUser();
   const navigate = useNavigate();
-  const { doctors } = useDoctors();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchParams] = useSearchParams();
+  const { doctors } = useDoctors();
+
+  const currentUser = getCurrentUser();
+
   const [selectedDoctorId, setSelectedDoctorId] = useState(
     searchParams.get("doctor") || ""
   );
   const [patientName, setPatientName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(
+    getCurrentUser()?.email || ""
+  );
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formError, setFormError] = useState("");
+
   const submissionLock = useRef(false);
+
   const selectedDoctor = doctors.find(
     (doctor) => String(doctor.id) === selectedDoctorId
   );
-  const availableSlots = getAvailableSlots(
-    selectedDoctorId,
-    date
-  );
 
+  const today = new Date();
+  const todayString = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0"),
+  ].join("-");
 
-
-async function handleSubmit(event) {
-  event.preventDefault();
-
-  const currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    navigate("/auth");
-    return;
-  }
-
-  if (submissionLock.current) return;
-
-  const result = appointmentSchema.safeParse({
-    doctorId: selectedDoctorId,
-    patientName,
-    email,
-    date,
-    time,
-  });
-
-  if (!result.success) {
-    setFormError(result.error.issues[0].message);
-    return;
-  }
-
-  if (!selectedDoctor) {
-    setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
-    return;
-  }
-
-  if (!getAvailableSlots(selectedDoctorId, date).includes(time)) {
-    setFormError(
-      "არჩეული დრო მიუწვდომელია. გთხოვთ, აირჩიოთ სხვა დრო."
-    );
-    setTime("");
-    return;
-  }
-
-  const bookingKey =
-    `medibook-booking-${date}-${selectedDoctorId}-${time}`;
-
-  if (localStorage.getItem(bookingKey)) {
-    setFormError(
-      "ეს დრო უკვე დაჯავშნილია. გთხოვთ, აირჩიოთ სხვა დრო."
-    );
-    return;
-  }
-
-  submissionLock.current = true;
-  setIsSubmitting(true);
-  setFormError("");
-
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    if (!getAvailableSlots(selectedDoctorId, date).includes(time)) {
-      setFormError("არჩეული დრო უკვე დაკავებულია.");
-      setTime("");
+  useEffect(() => {
+    if (!selectedDoctorId || !date) {
       return;
     }
 
-    const savedAppointments = JSON.parse(
-      localStorage.getItem("medibook-appointments") || "[]"
-    );
+    const controller = new AbortController();
 
-    if (!Array.isArray(savedAppointments)) {
-      throw new Error("Invalid appointments data");
+    async function loadAvailableSlots() {
+      setLoadingSlots(true);
+      setAvailableSlots([]);
+      setFormError("");
+
+      try {
+        const response = await fetch(
+          `${API_URL}/api/appointments/available?doctorId=${encodeURIComponent(selectedDoctorId)}&date=${encodeURIComponent(date)}`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error("თავისუფალი დროების მიღება ვერ მოხერხდა.");
+        }
+
+        const data = await response.json();
+
+        if (!controller.signal.aborted) {
+          setAvailableSlots(
+            Array.isArray(data) ? data : data.availableSlots || data.slots || []
+          );
+        }
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          setFormError(error.message);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingSlots(false);
+        }
+      }
     }
 
-    const newAppointment = {
-      id: crypto.randomUUID(),
-      userId: currentUser.id,
+    loadAvailableSlots();
+
+    return () => controller.abort();
+  }, [selectedDoctorId, date]);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (!currentUser) {
+      navigate("/auth");
+      return;
+    }
+
+    if (currentUser.role !== "patient") {
+      setFormError("ვიზიტის დაჯავშნა მხოლოდ პაციენტს შეუძლია.");
+      return;
+    }
+
+    if (submissionLock.current) return;
+
+    const result = appointmentSchema.safeParse({
       doctorId: selectedDoctorId,
-      doctorName: selectedDoctor.name,
-      patientName: result.data.patientName,
-      email: result.data.email,
+      patientName,
+      email,
       date,
       time,
-    };
+    });
 
-    localStorage.setItem(
-      "medibook-appointments",
-      JSON.stringify([...savedAppointments, newAppointment])
-    );
+    if (!result.success) {
+      setFormError(result.error.issues[0].message);
+      return;
+    }
 
-    localStorage.setItem(
-      bookingKey,
-      JSON.stringify(newAppointment)
-    );
+    if (!selectedDoctor) {
+      setFormError("გთხოვთ, აირჩიოთ სიაში არსებული ექიმი.");
+      return;
+    }
 
-    setSubmitted(true);
-  } catch {
-    setFormError("დაჯავშნა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.");
-  } finally {
-    setIsSubmitting(false);
-    submissionLock.current = false;
+    if (date < todayString) {
+      setFormError("წარსული თარიღის არჩევა შეუძლებელია.");
+      return;
+    }
+
+    if (!availableSlots.includes(time)) {
+      setFormError("არჩეული დრო მიუწვდომელია.");
+      return;
+    }
+
+    const token = getToken();
+
+    if (!token) {
+      setFormError("სესია დასრულებულია. გთხოვთ, ხელახლა შეხვიდეთ.");
+      return;
+    }
+
+    submissionLock.current = true;
+    setIsSubmitting(true);
+    setFormError("");
+
+    try {
+      const response = await fetch(`${API_URL}/api/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          doctorId: Number(selectedDoctorId),
+          date,
+          time,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setTime("");
+          setAvailableSlots((previous) =>
+            previous.filter((slot) => slot !== time)
+          );
+          throw new Error(
+            "ეს დრო უკვე დაჯავშნილია. გთხოვთ, აირჩიოთ სხვა დრო."
+          );
+        }
+
+        throw new Error(
+          data.error || data.message || "დაჯავშნა ვერ მოხერხდა."
+        );
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      setFormError(
+        error.message || "დაჯავშნა ვერ მოხერხდა. სცადეთ ხელახლა."
+      );
+    } finally {
+      submissionLock.current = false;
+      setIsSubmitting(false);
+    }
   }
-}
-
 
   return (
     <div className="app">
       <SiteHeader />
 
       <main>
-        <div role="note" style={{ padding: "12px 18px", marginBottom: "20px", backgroundColor: "#eef6ff", borderRadius: "8px" }}>
-          MediBook დემო-ვერსიაა. ჯავშნები ინახება მხოლოდ ამ ბრაუზერში და რეალურ კლინიკაში არ იგზავნება.
-        </div>
-        <section className="doctors-section" aria-labelledby="appointment-title">
+        <section
+          className="doctors-section"
+          aria-labelledby="appointment-title"
+        >
           <div className="section-heading">
             <div>
               <span className="eyebrow">ონლაინ დაჯავშნა</span>
               <h1 id="appointment-title">დაგეგმე ვიზიტი</h1>
-              <p>შეავსე ფორმა სასურველი ვიზიტის მოთხოვნისთვის.</p>
+              <p>აირჩიე ექიმი, თარიღი და თავისუფალი დრო.</p>
             </div>
           </div>
 
           {submitted ? (
             <article className="step-card" aria-live="polite">
-              <h2>
-                <span
-                  className="confirmation-pulse"
-                  aria-hidden="true"
-                ></span>
-                ვიზიტის მოთხოვნა მიღებულია
-              </h2>
+              <h2>ვიზიტი წარმატებით დაიჯავშნა!</h2>
 
               <p>
-                გმადლობთ! თქვენი მოთხოვნა წარმატებით მომზადდა.
-                ეს დემო ვერსიაა — რეალური დაჯავშნა ჯერ არ ხორციელდება.
+                თქვენი ჯავშანი შენახულია MediBook-ის მონაცემთა ბაზაში.
               </p>
 
-              <p>ექიმი: {selectedDoctor?.name || "არ არის არჩეული"}</p>
+              <p>ექიმი: {selectedDoctor?.name}</p>
               <p>პაციენტი: {patientName}</p>
               <p>თარიღი: {date}</p>
               <p>დრო: {time}</p>
 
-              <Link className="button" to="/doctors">
-                ექიმების სიაში დაბრუნება
+              <Link className="button" to="/my-appointments">
+                ჩემი ვიზიტების ნახვა
               </Link>
             </article>
           ) : !currentUser ? (
             <div className="appointment-login-notice">
-              <h2>ვიზიტის დასაგეგმად გაიარე ავტორიზაცია</h2>
-              <p>
-                ექიმთან ვიზიტის დასაჯავშნად საჭიროა ანგარიშში შესვლა.
-              </p>
+              <h2>ვიზიტის დასაჯავშნად გაიარე ავტორიზაცია</h2>
+              <p>გთხოვთ, შეხვიდეთ პაციენტის ანგარიშში.</p>
+
               <Link to="/auth" className="button">
                 შესვლა / რეგისტრაცია
               </Link>
@@ -206,9 +251,12 @@ async function handleSubmit(event) {
                 onChange={(event) => {
                   setSelectedDoctorId(event.target.value);
                   setTime("");
+                  setAvailableSlots([]);
                 }}
+                required
               >
                 <option value="">აირჩიე ექიმი</option>
+
                 {doctors.map((doctor) => (
                   <option key={doctor.id} value={doctor.id}>
                     {doctor.name} — {doctor.specialty}
@@ -242,10 +290,11 @@ async function handleSubmit(event) {
                 id="date"
                 type="date"
                 value={date}
-                min={new Date().toLocaleDateString("en-CA")}
+                min={todayString}
                 onChange={(event) => {
                   setDate(event.target.value);
                   setTime("");
+                  setAvailableSlots([]);
                 }}
                 required
               />
@@ -256,9 +305,19 @@ async function handleSubmit(event) {
                 value={time}
                 onChange={(event) => setTime(event.target.value)}
                 required
-                disabled={!selectedDoctorId || !date}
+                disabled={
+                  !selectedDoctorId ||
+                  !date ||
+                  loadingSlots ||
+                  isSubmitting
+                }
               >
-                <option value="">აირჩიე თავისუფალი დრო</option>
+                <option value="">
+                  {loadingSlots
+                    ? "იტვირთება..."
+                    : "აირჩიე თავისუფალი დრო"}
+                </option>
+
                 {availableSlots.map((slot) => (
                   <option key={slot} value={slot}>
                     {slot}
@@ -266,19 +325,21 @@ async function handleSubmit(event) {
                 ))}
               </select>
 
-              {selectedDoctorId && date && availableSlots.length === 0 && (
-                <p role="status">
-                  ამ თარიღისთვის თავისუფალი დრო არ არის.
-                  აირჩიე სხვა თარიღი.
-                </p>
-              )}
+              {selectedDoctorId &&
+                date &&
+                !loadingSlots &&
+                availableSlots.length === 0 && (
+                  <p role="status">
+                    ამ თარიღისთვის თავისუფალი დრო არ არის.
+                  </p>
+                )}
 
               <button
                 className="button"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || loadingSlots}
               >
-                {isSubmitting ? "მუშავდება..." : "ვიზიტის მოთხოვნა"}
+                {isSubmitting ? "მუშავდება..." : "ვიზიტის დაჯავშნა"}
               </button>
             </form>
           )}

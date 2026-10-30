@@ -24,7 +24,7 @@ function RouteLoading() {
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter basename="/MediBook">
+      <BrowserRouter basename="/MediBook/">
         <Suspense fallback={<RouteLoading />}>
           <Routes>
             <Route path="/" element={<Home />} />

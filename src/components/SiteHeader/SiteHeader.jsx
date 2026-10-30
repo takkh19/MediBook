@@ -4,13 +4,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../../utils/auth";
 import Icon from "../Icon/Icon.jsx";
 import "./SiteHeader.css";
-import { useDoctorStore } from "../../store/useDoctorStore";
 
 function SiteHeader() {
     const navigate = useNavigate();
-    const doctorsCount = useDoctorStore(
-        (state) => state.doctors.length
-    );
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState(getCurrentUser);
 
@@ -62,9 +58,6 @@ function SiteHeader() {
                 <NavLink to="/doctors" onClick={closeMenu}>
                     ექიმები
                 </NavLink>
-                <span className="doctors-counter">
-                    ექიმების რაოდენობა: {doctorsCount}
-                </span>
                 <NavLink to="/appointments" onClick={closeMenu}>
                     ვიზიტის დაგეგმვა
                 </NavLink>

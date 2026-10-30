@@ -1,5 +1,6 @@
 
 import "./Layout.css";
+import { Link } from "react-router-dom";
 
 function Layout({ children }) {
   return (
@@ -8,11 +9,11 @@ function Layout({ children }) {
         <h2> MediBook </h2>
 
         <nav aria-label="მთავარი ნავიგაცია">
-          <a href="/dashboard">მთავარი პანელი</a>
-          <a href="/">მთავარი გვერდი</a>
-          <a href="/doctors">ექიმები</a>
-          <a href="/appointments">ვიზიტები</a>
-          <a href="/about">ჩვენ შესახებ</a>
+          <Link to="/dashboard">მთავარი პანელი</Link>
+          <Link to="/">მთავარი გვერდი</Link>
+          <Link to="/doctors">ექიმები</Link>
+          <Link to="/appointments">ვიზიტები</Link>
+          <Link to="/about">ჩვენ შესახებ</Link>
         </nav>
       </aside>
 

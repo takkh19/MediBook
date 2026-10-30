@@ -4,42 +4,42 @@ const doctors = [
     id: 1,
     name: "ნინო ბერიძე",
     specialty: "კარდიოლოგი",
-    experience: "10 წლის გამოცდილება",
+    experience: "10 წლიანი გამოცდილება",
     initials: "ნბ",
   },
   {
     id: 2,
     name: "გიორგი მაისურაძე",
     specialty: "დერმატოლოგი",
-    experience: "8 წლის გამოცდილება",
+    experience: "8 წლიანი გამოცდილება",
     initials: "გმ",
   },
   {
     id: 3,
     name: "ანა ლომიძე",
     specialty: "ნევროლოგი",
-    experience: "7 წლის გამოცდილება",
+    experience: "7 წლიანი გამოცდილება",
     initials: "ალ",
   },
   {
     id: 4,
     name: "დავით კაპანაძე",
     specialty: "ოჯახის ექიმი",
-    experience: "12 წლის გამოცდილება",
+    experience: "12 წლიანი გამოცდილება",
     initials: "დკ",
   },
   {
     id: 5,
     name: "მარიამ ჯაფარიძე",
     specialty: "პედიატრი",
-    experience: "9 წლის გამოცდილება",
+    experience: "9 წლიანი გამოცდილება",
     initials: "მჯ",
   },
   {
     id: 6,
     name: "ლევან გელაშვილი",
     specialty: "ორთოპედი",
-    experience: "11 წლის გამოცდილება",
+    experience: "11 წლიანი გამოცდილება",
     initials: "ლგ",
   },
 ];
@@ -51,37 +51,45 @@ export function getLocalDoctors() {
 
 // Attempts to load doctors from the API.
 // If the request fails, local data is returned instead.
+
 export async function getDoctors() {
   try {
-    
-const response = await fetch("/api/doctors");
+    const API_URL =
+      import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-if (!response.ok) {
-  throw new Error(`API error: ${response.status}`);
-}
+    const response = await fetch(`${API_URL}/api/doctors`);
 
-const contentType = response.headers.get("content-type") || "";
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
 
-if (!contentType.includes("application/json")) {
-  throw new Error("API returned a non-JSON response");
-}
+    const data = await response.json();
 
-const data = await response.json();
+    const doctors = Array.isArray(data) ? data : data.doctors;
 
-
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(doctors)) {
       throw new Error("Invalid doctors data");
     }
 
     return {
-      doctors: data,
+      doctors: doctors.map((doctor) => ({
+        ...doctor,
+        initials: doctor.name
+          .trim()
+          .split(/\s+/)
+          .map((part) => part[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase(),
+        experience:
+  typeof doctor.experience === "number"
+    ? `${doctor.experience} წლიანი გამოცდილება`
+    : doctor.experience,
+      })),
       isDemoData: false,
     };
   } catch (error) {
-    console.warn(
-      "API unavailable. Using local demo doctors instead.",
-      error
-    );
+    console.warn("API unavailable. Using demo doctors.", error);
 
     return {
       doctors: getLocalDoctors(),
@@ -89,3 +97,4 @@ const data = await response.json();
     };
   }
 }
+

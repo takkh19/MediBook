@@ -1,88 +1,84 @@
 
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { getDoctors } from "../services/doctorsServices";
 
-const STORAGE_KEY = "medibook_doctors";
+export const useDoctorStore = create((set, get) => ({
+  // Doctors data
+  doctors: [],
+  isDemoData: false,
+  isLoaded: false,
+  isLoading: false,
+  error: null,
 
-export const useDoctorStore = create(
-  persist(
-    (set, get) => ({
-      doctors: [],
-      isDemoData: false,
-      searchTerm: "",
-      isLoaded: false,
+  // Search
+  searchTerm: "",
 
-      loadDoctors: async () => {
-        if (get().isLoaded) return;
+  // Load doctors from Backend
+  loadDoctors: async () => {
+    if (get().isLoading) return;
 
-        try {
-          const result = await getDoctors();
+    set({
+      isLoading: true,
+      error: null,
+    });
 
-          if (!get().isLoaded) {
-            set({
-              doctors: result.doctors,
-              isDemoData: result.isDemoData,
-              isLoaded: true,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to load doctors:", error);
-        }
-      },
+    try {
+      const result = await getDoctors();
 
-      setSearchTerm: (searchTerm) => set({ searchTerm }),
+      set({
+        doctors: result.doctors,
+        isDemoData: result.isDemoData,
+        isLoaded: true,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      console.error("Failed to load doctors:", error);
 
-      addDoctor: (doctorData) =>
-        set((state) => ({
-          doctors: [
-            ...state.doctors,
-            { ...doctorData, id: crypto.randomUUID() },
-          ],
-          isLoaded: true,
-        })),
-
-      updateDoctor: (updatedDoctor) =>
-        set((state) => ({
-          doctors: state.doctors.map((doctor) =>
-            doctor.id === updatedDoctor.id
-              ? updatedDoctor
-              : doctor
-          ),
-          isLoaded: true,
-        })),
-
-      deleteDoctor: (doctorId) =>
-        set((state) => ({
-          doctors: state.doctors.filter(
-            (doctor) => doctor.id !== doctorId
-          ),
-          isLoaded: true,
-        })),
-    }),
-    {
-      name: STORAGE_KEY,
-      storage: createJSONStorage(() => localStorage),
-
-      migrate: (persistedState) => {
-        if (Array.isArray(persistedState)) {
-          return {
-            doctors: persistedState,
-            isDemoData: true,
-            isLoaded: true,
-          };
-        }
-
-        return persistedState;
-      },
-
-      version: 1,
-
-      partialize: (state) => ({
-        doctors: state.doctors,
-        isDemoData: state.isDemoData,
-        isLoaded: state.isLoaded,
-      }),
+      set({
+        doctors: [],
+        isDemoData: false,
+        isLoaded: true,
+        isLoading: false,
+        error: error.message || "ექიმების ჩატვირთვა ვერ მოხერხდა.",
+      });
     }
-  )
-);
+  },
+
+  // Update search term
+  setSearchTerm: (searchTerm) => {
+    set({ searchTerm });
+  },
+
+  // Add doctor to current UI state
+  addDoctor: (doctor) => {
+    set((state) => ({
+      doctors: [...state.doctors, doctor],
+    }));
+  },
+
+  // Update doctor in current UI state
+  updateDoctor: (updatedDoctor) => {
+    set((state) => ({
+      doctors: state.doctors.map((doctor) =>
+        doctor.id === updatedDoctor.id
+          ? updatedDoctor
+          : doctor
+      ),
+    }));
+  },
+
+  // Remove doctor from current UI state
+  deleteDoctor: (doctorId) => {
+    set((state) => ({
+      doctors: state.doctors.filter(
+        (doctor) => doctor.id !== doctorId
+      ),
+    }));
+  },
+
+  // Clear errors
+  clearError: () => {
+    set({ error: null });
+  },
+}));
